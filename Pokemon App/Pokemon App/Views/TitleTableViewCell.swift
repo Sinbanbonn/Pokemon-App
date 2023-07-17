@@ -7,9 +7,17 @@
 
 import UIKit
 
+
+protocol TitleTableViewCellDelegate: AnyObject {
+    func titleTableViewCellDidTapCell(_ cell: TitleTableViewCell, viewModel: TitlePreviewViewModel)
+}
+
+
 class TitleTableViewCell: UITableViewCell {
     
     static let identifier = "TitleTableViewCell"
+    
+    weak var delegate: TitleTableViewCellDelegate?
     
     private let playTitleButton: UIButton = {
         let button = UIButton()
