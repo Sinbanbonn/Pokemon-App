@@ -3,7 +3,6 @@ import SDWebImage
 
 class PokemonViewController: UIViewController {
 
-
     private let pokemonImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -96,17 +95,15 @@ class PokemonViewController: UIViewController {
         NSLayoutConstraint.activate(pokemonTypeConstraints)
 
     }
-    
+
     func configure(with model: TitlePreviewViewModel) {
         pokemonName.text = model.name
         pokemonHeight.text = "Height: \(model.height) sm"
         pokemonWeight.text = "Weight: \(model.weight) kg"
         pokemonType.text = "Type: \(model.type)"
-        
+
         guard let url = URL(string: model.picture) else {return}
         pokemonImage.sd_setImage(with: url)
     }
 
 }
-
-

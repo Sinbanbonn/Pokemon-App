@@ -25,10 +25,9 @@ struct TypeData: Codable {
     let url: String
 }
 
-
 struct Sprites: Codable {
     let frontDefault: String
-    
+
     private enum CodingKeys: String, CodingKey {
         case frontDefault = "front_default"
     }

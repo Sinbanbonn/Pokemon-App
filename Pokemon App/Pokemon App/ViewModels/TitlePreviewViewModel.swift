@@ -7,15 +7,11 @@
 
 import Foundation
 
+struct TitlePreviewViewModel {
+    let picture: String
+    let name: String
+    let height: Int
+    let weight: Int
+    let type: String
 
-class APICaller {
-    static let shared = APICaller()
-    
-    func getTitles(completion: @escaping (Result<[Title] , Error>) -> Void) {
-        
-    }
-    
-    func getTitlesPreview(completion: @escaping (Result<[TitlePreview] , Error>) -> Void) {
-        
-    }
 }
