@@ -24,6 +24,7 @@
 		0D2A3F7D2A65C20B00C534E2 /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0D2A3F7C2A65C20B00C534E2 /* SDWebImageMapKit */; settings = {ATTRIBUTES = (Required, ); }; };
 		0D2A3F7F2A65F0AF00C534E2 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2A3F7E2A65F0AF00C534E2 /* Extensions.swift */; };
 		0D2A3F8E2A66D52100C534E2 /* RequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2A3F8D2A66D52100C534E2 /* RequestError.swift */; };
+		0D2A3F912A671C8A00C534E2 /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = 0D2A3F902A671C8A00C534E2 /* Reachability */; };
 		52FAF1487AED351D6D836AC3 /* Pods_Pokemon_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E24548FE801A8546AE5202D6 /* Pods_Pokemon_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +57,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52FAF1487AED351D6D836AC3 /* Pods_Pokemon_App.framework in Frameworks */,
+				0D2A3F912A671C8A00C534E2 /* Reachability in Frameworks */,
 				0D2A3F7D2A65C20B00C534E2 /* SDWebImageMapKit in Frameworks */,
 				0D2A3F7B2A65C20B00C534E2 /* SDWebImage in Frameworks */,
 			);
@@ -185,8 +187,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0D2A3F622A655C2D00C534E2 /* Build configuration list for PBXNativeTarget "Pokemon App" */;
 			buildPhases = (
-				0D2A3F892A66AF7300C534E2 /* ShellScript */,
 				B9565ACA699CED425395FE6D /* [CP] Check Pods Manifest.lock */,
+				0D2A3F892A66AF7300C534E2 /* ShellScript */,
 				0D2A3F472A655C2C00C534E2 /* Sources */,
 				0D2A3F482A655C2C00C534E2 /* Frameworks */,
 				0D2A3F492A655C2C00C534E2 /* Resources */,
@@ -199,6 +201,7 @@
 			packageProductDependencies = (
 				0D2A3F7A2A65C20B00C534E2 /* SDWebImage */,
 				0D2A3F7C2A65C20B00C534E2 /* SDWebImageMapKit */,
+				0D2A3F902A671C8A00C534E2 /* Reachability */,
 			);
 			productName = "Pokemon App";
 			productReference = 0D2A3F4B2A655C2C00C534E2 /* Pokemon App.app */;
@@ -230,6 +233,7 @@
 			mainGroup = 0D2A3F422A655C2C00C534E2;
 			packageReferences = (
 				0D2A3F792A65C20B00C534E2 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				0D2A3F8F2A671C8A00C534E2 /* XCRemoteSwiftPackageReference "Reachability.swift" */,
 			);
 			productRefGroup = 0D2A3F4C2A655C2C00C534E2 /* Products */;
 			projectDirPath = "";
@@ -539,6 +543,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		0D2A3F8F2A671C8A00C534E2 /* XCRemoteSwiftPackageReference "Reachability.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -551,6 +563,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0D2A3F792A65C20B00C534E2 /* XCRemoteSwiftPackageReference "SDWebImage" */;
 			productName = SDWebImageMapKit;
+		};
+		0D2A3F902A671C8A00C534E2 /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D2A3F8F2A671C8A00C534E2 /* XCRemoteSwiftPackageReference "Reachability.swift" */;
+			productName = Reachability;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -23,7 +23,6 @@ class TitleTableViewCell: UITableViewCell {
                             withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .black
         return button
     }()
 

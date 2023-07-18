@@ -9,6 +9,7 @@ import UIKit
 
 class HomeViewController: UIViewController {
 
+     var counter: Int = 0
     private var titles: [Pokemon] = [Pokemon]()
 
     private let pokemonTable: UITableView = {
@@ -32,7 +33,6 @@ class HomeViewController: UIViewController {
         title = "Pokemon List"
         fetchData()
 
-        navigationController?.pushViewController(PokemonViewController().self, animated: true)
 
     }
 
@@ -45,13 +45,12 @@ class HomeViewController: UIViewController {
         APICaller.shared.getPokemonList { [weak self] result in
             switch result {
             case .success(let titles):
-                self?.titles = titles
+                self?.titles += titles
                 DispatchQueue.main.async {
                     self?.pokemonTable.reloadData()
                 }
             case .failure(let error):
-                print(error.localizedDescription)
-
+                print(error)
             }
         }
     }
@@ -76,6 +75,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        counter += 1
+        let lastElement = titles.count - 1
+        if indexPath.row == lastElement {
+           fetchData()
+        }
+    }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -86,11 +93,12 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             case .success(let pokemon):
                 DispatchQueue.main.async {
                     let vc = PokemonViewController()
-                    vc.configure(with: TitlePreviewViewModel(picture: pokemon.sprites.frontDefault,
-                                                             name: pokemon.name.capitalizeFirstLetter(),
-                                                             height: pokemon.height,
-                                                             weight: pokemon.weight,
-                                                             type: pokemon.types[0].type.name))
+                    vc.configure(with: TitlePreviewViewModel(
+                        picture: pokemon.sprites.other.officialArtwork.frontDefault,
+                        name: pokemon.name.capitalizeFirstLetter(),
+                        height: pokemon.height,
+                        weight: pokemon.weight,
+                        type: pokemon.types.map { $0.type.name }.joined(separator: ", ")))
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             case .failure(let error):

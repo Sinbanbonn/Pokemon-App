@@ -27,7 +27,24 @@ struct TypeData: Codable {
 
 struct Sprites: Codable {
     let frontDefault: String
+    let other: Other
 
+    private enum CodingKeys: String, CodingKey {
+        case frontDefault = "front_default"
+        case other
+    }
+}
+
+struct Other: Codable {
+    let officialArtwork: OfficialArtwork
+    
+    private enum CodingKeys: String, CodingKey {
+        case officialArtwork = "official-artwork"
+    }
+}
+
+struct OfficialArtwork: Codable {
+    let frontDefault: String
     private enum CodingKeys: String, CodingKey {
         case frontDefault = "front_default"
     }

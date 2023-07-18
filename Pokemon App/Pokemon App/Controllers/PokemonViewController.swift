@@ -17,36 +17,32 @@ class PokemonViewController: UIViewController {
     private let pokemonName: UILabel = {
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.font = UIFont.systemFont(ofSize: 20)
+        nameLabel.font = UIFont.systemFont(ofSize: 32, weight: .semibold)
         nameLabel.textAlignment = .center
-        nameLabel.text = "Имя картинки"
         return nameLabel
     }()
 
     private let pokemonType: UILabel = {
         let bodyTypeLabel = UILabel()
         bodyTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        bodyTypeLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        bodyTypeLabel.font = UIFont.boldSystemFont(ofSize: 24)
         bodyTypeLabel.textAlignment = .left
-        bodyTypeLabel.text = "Type: Атлетическое"
         return bodyTypeLabel
     }()
 
     private let pokemonWeight: UILabel = {
         let weightLabel = UILabel()
         weightLabel.translatesAutoresizingMaskIntoConstraints = false
-        weightLabel.font = UIFont.systemFont(ofSize: 16)
+        weightLabel.font = UIFont.systemFont(ofSize: 24)
         weightLabel.textAlignment = .left
-        weightLabel.text = "Вес: 70 кг"
         return weightLabel
     }()
 
     private let pokemonHeight: UILabel = {
         let heightLabel = UILabel()
         heightLabel.translatesAutoresizingMaskIntoConstraints = false
-        heightLabel.font = UIFont.systemFont(ofSize: 16)
+        heightLabel.font = UIFont.systemFont(ofSize: 24)
         heightLabel.textAlignment = .left
-        heightLabel.text = "Рост: 180 см"
         return heightLabel
     }()
 
@@ -67,8 +63,8 @@ class PokemonViewController: UIViewController {
 
        let pokemonImageConstraints = [pokemonImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             pokemonImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pokemonImage.widthAnchor.constraint(equalToConstant: 170),
-            pokemonImage.heightAnchor.constraint(equalToConstant: 170)]
+            pokemonImage.widthAnchor.constraint(equalToConstant: 250),
+            pokemonImage.heightAnchor.constraint(equalToConstant: 250)]
 
         let pokemonNameConstraints =
             [pokemonName.topAnchor.constraint(equalTo: pokemonImage.bottomAnchor, constant: 20),
@@ -76,15 +72,15 @@ class PokemonViewController: UIViewController {
             pokemonName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
 
         let pokemonWeightConstraints =
-            [pokemonWeight.topAnchor.constraint(equalTo: pokemonName.bottomAnchor, constant: 10),
+            [pokemonWeight.topAnchor.constraint(equalTo: pokemonName.bottomAnchor, constant: 12),
             pokemonWeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             pokemonWeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
         let pokemonHeightConstraints =
-            [pokemonHeight.topAnchor.constraint(equalTo: pokemonWeight.bottomAnchor, constant: 10),
+            [pokemonHeight.topAnchor.constraint(equalTo: pokemonWeight.bottomAnchor, constant: 12),
             pokemonHeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             pokemonHeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
         let pokemonTypeConstraints =
-            [pokemonType.topAnchor.constraint(equalTo: pokemonHeight.bottomAnchor, constant: 10),
+            [pokemonType.topAnchor.constraint(equalTo: pokemonHeight.bottomAnchor, constant: 12),
             pokemonType.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             pokemonType.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
 
@@ -98,7 +94,7 @@ class PokemonViewController: UIViewController {
 
     func configure(with model: TitlePreviewViewModel) {
         pokemonName.text = model.name
-        pokemonHeight.text = "Height: \(model.height) sm"
+        pokemonHeight.text = "Height: \(model.height) cm"
         pokemonWeight.text = "Weight: \(model.weight) kg"
         pokemonType.text = "Type: \(model.type)"
 

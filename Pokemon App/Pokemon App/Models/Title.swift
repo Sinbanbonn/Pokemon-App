@@ -2,9 +2,11 @@ import Foundation
 
 struct Title: Codable {
     let results: [Pokemon]
+    let next: String
 
     enum CodingKeys: String, CodingKey {
         case results
+        case next
     }
 }
 

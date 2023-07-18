@@ -9,22 +9,61 @@ import Foundation
 
 enum RequestError: Error {
     case decode
-    case invalidURL
-    case noResponse
+    case badRequest
     case unauthorized
-    case unexpectedStatusCode
-    case unknown
+    case forbidden
+    case notFound
+    case internalServerError
+    case badGateway
+    case serviceUnavailable
+    case gatewayTimeout
+    case other(Int)
     
-    var customMessage: String {
+    var description: String {
         switch self {
         case .decode:
-            return "Decode error"
+            return "Decode Error"
+        case .badRequest:
+            return "Bad Request"
         case .unauthorized:
-            return "Session expired"
-        default:
-            return "Unknown error"
+            return "Unauthorized"
+        case .forbidden:
+            return "Forbidden"
+        case .notFound:
+            return "Not Found"
+        case .internalServerError:
+            return "Internal Server Error"
+        case .badGateway:
+            return "Bad Gateway"
+        case .serviceUnavailable:
+            return "Service Unavailable"
+        case .gatewayTimeout:
+            return "Gateway Timeout"
+        case .other(let statusCode):
+            return "Error with status code: \(statusCode)"
         }
     }
 }
 
-
+func handleResponseError(statusCode: Int) -> RequestError {
+    switch statusCode {
+    case 400:
+        return .badRequest
+    case 401:
+        return .unauthorized
+    case 403:
+        return .forbidden
+    case 404:
+        return .notFound
+    case 500:
+        return .internalServerError
+    case 502:
+        return .badGateway
+    case 503:
+        return .serviceUnavailable
+    case 504:
+        return .gatewayTimeout
+    default:
+        return .other(statusCode)
+    }
+}
