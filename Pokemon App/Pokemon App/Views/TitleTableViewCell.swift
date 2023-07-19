@@ -1,14 +1,7 @@
-//
-//  TitleTableViewCell.swift
-//  Pokemon App
-//
-//  Created by Андрей Логвинов on 7/17/23.
-//
-
 import UIKit
 
 protocol TitleTableViewCellDelegate: AnyObject {
-    func titleTableViewCellDidTapCell(_ cell: TitleTableViewCell, viewModel: TitlePreviewViewModel)
+    func titleTableViewCellDidTapCell(_ cell: TitleTableViewCell, viewModel: PokemonPreviewViewModel)
 }
 
 class TitleTableViewCell: UITableViewCell {
@@ -57,7 +50,7 @@ class TitleTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate(playTitleButtonConstraints)
     }
 
-    public func configure(with model: TitleViewModel) {
+    public func configure(with model: PokemonViewModel) {
         titleLabel.text = model.titleName
     }
 

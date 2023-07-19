@@ -1,6 +1,6 @@
 import Foundation
 
-struct Title: Codable {
+struct PokemonList: Codable {
     let results: [Pokemon]
     let next: String
 

@@ -1,11 +1,8 @@
 import Foundation
 import Reachability
 
-struct Constants {
 
-}
-
-class APICaller {
+final class APICaller {
     
     static let shared = APICaller()
     private var baseURL = "https://pokeapi.co/api/v2/pokemon"
@@ -30,7 +27,7 @@ class APICaller {
             
             switch response.statusCode {
             case 200...299:
-                guard let decodedResponse = try? JSONDecoder().decode(Title.self, from: data) else{
+                guard let decodedResponse = try? JSONDecoder().decode(PokemonList.self, from: data) else{
                     completion(.failure(.decode))
                     return
                 }
@@ -53,7 +50,7 @@ class APICaller {
 
     }
 
-    func getPokemonInfo(url: String, completion: @escaping (Result<TitlePreview, RequestError>) -> Void) {
+    func getPokemonInfo(url: String, completion: @escaping (Result<PokemonPreview, RequestError>) -> Void) {
         guard let url = URL(string: url) else {return}
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, response, error in
             guard let data = data, error == nil else {
@@ -66,7 +63,7 @@ class APICaller {
             
             switch response.statusCode {
             case 200...299:
-                guard let decodedResponse = try? JSONDecoder().decode(TitlePreview.self, from: data) else{
+                guard let decodedResponse = try? JSONDecoder().decode(PokemonPreview.self, from: data) else{
                     completion(.failure(.decode))
                     return
                 }

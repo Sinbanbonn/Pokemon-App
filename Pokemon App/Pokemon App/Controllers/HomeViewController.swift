@@ -1,15 +1,7 @@
-//
-//  ViewController.swift
-//  Pokemon App
-//
-//  Created by Андрей Логвинов on 7/17/23.
-//
-
 import UIKit
 
 class HomeViewController: UIViewController {
 
-     var counter: Int = 0
     private var titles: [Pokemon] = [Pokemon]()
 
     private let pokemonTable: UITableView = {
@@ -31,6 +23,7 @@ class HomeViewController: UIViewController {
         pokemonTable.delegate = self
         pokemonTable.dataSource = self
         title = "Pokemon List"
+        
         fetchData()
 
 
@@ -68,7 +61,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
 
         let title = titles[indexPath.row]
-        cell.configure(with: TitleViewModel(titleName: title.name.capitalizeFirstLetter()))
+        cell.configure(with: PokemonViewModel(titleName: title.name.capitalizeFirstLetter()))
         return cell
     }
 
@@ -77,7 +70,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        counter += 1
         let lastElement = titles.count - 1
         if indexPath.row == lastElement {
            fetchData()
@@ -93,7 +85,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             case .success(let pokemon):
                 DispatchQueue.main.async {
                     let vc = PokemonViewController()
-                    vc.configure(with: TitlePreviewViewModel(
+                    vc.configure(with: PokemonPreviewViewModel(
                         picture: pokemon.sprites.other.officialArtwork.frontDefault,
                         name: pokemon.name.capitalizeFirstLetter(),
                         height: pokemon.height,

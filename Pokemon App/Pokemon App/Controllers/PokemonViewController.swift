@@ -92,7 +92,7 @@ class PokemonViewController: UIViewController {
 
     }
 
-    func configure(with model: TitlePreviewViewModel) {
+    func configure(with model: PokemonPreviewViewModel) {
         pokemonName.text = model.name
         pokemonHeight.text = "Height: \(model.height) cm"
         pokemonWeight.text = "Weight: \(model.weight) kg"
