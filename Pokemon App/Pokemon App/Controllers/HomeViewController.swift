@@ -3,7 +3,7 @@ import UIKit
 class HomeViewController: UIViewController {
 
     private var titles: [Pokemon] = [Pokemon]()
-
+    private let pokSer = RepoService()
     private let pokemonTable: UITableView = {
         let table = UITableView()
         table.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
@@ -25,6 +25,15 @@ class HomeViewController: UIViewController {
         title = "Pokemon List"
         
         fetchData()
+        pokSer.getPokemonList(offset: 0, limit: 20) { result in
+            switch result {
+            case .success(let list):
+                print(list.results)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        
+        }
 
 
     }
@@ -85,7 +94,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             case .success(let pokemon):
                 DispatchQueue.main.async {
                     let vc = PokemonViewController()
-                    vc.configure(with: PokemonPreviewViewModel(
+                    vc.configure(with: PokemonDetailViewModel(
                         picture: pokemon.sprites.other.officialArtwork.frontDefault,
                         name: pokemon.name.capitalizeFirstLetter(),
                         height: pokemon.height,

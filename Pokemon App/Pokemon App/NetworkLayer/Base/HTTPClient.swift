@@ -18,12 +18,12 @@ extension HTTPClient {
         
         
         guard let url = urlComponents.url else {
-            completion(.failure(.other(1111111)))
+            completion(.failure(.invalidURL))
             return
         }
         
         guard let url = url.description.removingPercentEncoding else{
-            completion(.failure(.other(1111111)))
+            completion(.failure(.invalidURL))
             return
         }
         

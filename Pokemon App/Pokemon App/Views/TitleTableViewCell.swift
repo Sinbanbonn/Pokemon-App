@@ -1,7 +1,7 @@
 import UIKit
 
 protocol TitleTableViewCellDelegate: AnyObject {
-    func titleTableViewCellDidTapCell(_ cell: TitleTableViewCell, viewModel: PokemonPreviewViewModel)
+    func titleTableViewCellDidTapCell(_ cell: TitleTableViewCell, viewModel: PokemonDetailViewModel)
 }
 
 class TitleTableViewCell: UITableViewCell {

@@ -1,6 +1,6 @@
 import Foundation
 
-struct PokemonPreviewViewModel {
+struct PokemonDetailViewModel {
     let picture: String
     let name: String
     let height: Int

@@ -1,6 +1,7 @@
 import Foundation
 
 enum RequestError: Error {
+    case invalidURL
     case decode
     case badRequest
     case unauthorized
@@ -11,9 +12,12 @@ enum RequestError: Error {
     case serviceUnavailable
     case gatewayTimeout
     case other(Int)
-    
+//.noResponse
+//.decode
     var description: String {
         switch self {
+        case .invalidURL:
+            return "Invalid URL"
         case .decode:
             return "Decode Error"
         case .badRequest:
