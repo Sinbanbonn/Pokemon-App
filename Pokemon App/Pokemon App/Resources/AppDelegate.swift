@@ -25,11 +25,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Core Data stack
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "Pokemon_App")
-        container.loadPersistentStores(completionHandler: { (_, error) in
+        let container = NSPersistentContainer(name: "LocalStore")
+        container.loadPersistentStores(completionHandler: { description, error in
             if let error = error as NSError? {
                 
                 fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+            else {
+                print("Db url --- \(description.url)")
             }
         })
         return container
