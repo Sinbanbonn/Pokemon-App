@@ -12,7 +12,7 @@ class TitleTableViewCell: UITableViewCell {
 
     private let playTitleButton: UIButton = {
         let button = UIButton()
-        let image = UIImage(systemName: "play.circle",
+        let image = UIImage(systemName: "pawprint",
                             withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +51,7 @@ class TitleTableViewCell: UITableViewCell {
     }
 
     public func configure(with model: PokemonViewModel) {
-        titleLabel.text = model.titleName
+        titleLabel.text = model.titleName.capitalizeFirstLetter()
     }
 
     required init?(coder: NSCoder) {

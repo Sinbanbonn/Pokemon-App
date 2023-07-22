@@ -1,9 +1,12 @@
 import UIKit
+import Reachability
+import CoreData
 
 class HomeViewController: UIViewController {
 
-    private var titles: [Pokemon] = [Pokemon]()
-    private let pokSer = RepoService()
+    private var titles: [PokemonViewModel] = [PokemonViewModel]()
+    private let pokSer = NetworkService()
+    
     private let pokemonTable: UITableView = {
         let table = UITableView()
         table.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
@@ -18,33 +21,34 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        let customTitleView = TitleView()
+            customTitleView.titleLabel.text = "Pokemon List"
+           
+            
+            navigationItem.titleView = customTitleView
 
         view.addSubview(pokemonTable)
         pokemonTable.delegate = self
         pokemonTable.dataSource = self
-        title = "Pokemon List"
+        //title = "Pokemon List"
         
         fetchData()
-        pokSer.getPokemonList(offset: 0, limit: 20) { result in
-            switch result {
-            case .success(let list):
-                print(list.results)
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
+        //CoreDataManager.shared.clearoreData()
+       print(isInternetAvailable())
         
-        }
-
-
     }
-
+    func isInternetAvailable() -> Bool {
+        let reachability = try! Reachability()
+        return reachability.connection != .unavailable
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         pokemonTable.frame = view.bounds
     }
 
     private func fetchData() {
-        APICaller.shared.getPokemonList { [weak self] result in
+        PokemonManager.shared.getPokemonList(offset: 0) { [weak self] result in
             switch result {
             case .success(let titles):
                 self?.titles += titles
@@ -70,7 +74,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
 
         let title = titles[indexPath.row]
-        cell.configure(with: PokemonViewModel(titleName: title.name.capitalizeFirstLetter()))
+        cell.configure(with: title)
         return cell
     }
 
@@ -87,19 +91,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-
+        print(indexPath.row)
         let pokemon = titles[indexPath.row]
-        APICaller.shared.getPokemonInfo(url: pokemon.url) { [weak self] result in
+        PokemonManager.shared.getPokemonDetails(id: indexPath.row) { [weak self] result in
             switch result {
             case .success(let pokemon):
                 DispatchQueue.main.async {
                     let vc = PokemonViewController()
-                    vc.configure(with: PokemonDetailViewModel(
-                        picture: pokemon.sprites.other.officialArtwork.frontDefault,
-                        name: pokemon.name.capitalizeFirstLetter(),
-                        height: pokemon.height,
-                        weight: pokemon.weight,
-                        type: pokemon.types.map { $0.type.name }.joined(separator: ", ")))
+                    vc.configure(with: pokemon)
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             case .failure(let error):
@@ -109,3 +108,4 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     }
 }
+

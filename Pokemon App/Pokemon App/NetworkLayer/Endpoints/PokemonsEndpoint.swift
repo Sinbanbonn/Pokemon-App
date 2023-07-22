@@ -19,7 +19,7 @@ extension PokemonEndpoint: Endpoint {
         case .pokemonList(let offset, let limit):
             return "/api/v2/pokemon?offset=\(offset)&limit=\(limit)"
         case .pokemonDetails(let id):
-            return "/\(id)/"
+            return "/api/v2/pokemon/\(id+1)/"
         }
     }
 

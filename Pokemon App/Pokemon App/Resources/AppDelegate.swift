@@ -22,13 +22,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
 
-    // MARK: - Core Data stack
+   
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "LocalStore")
+        let container = NSPersistentContainer(name: "LocalDB")
         container.loadPersistentStores(completionHandler: { description, error in
             if let error = error as NSError? {
-                
+
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
             else {
@@ -45,11 +45,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             do {
                 try context.save()
             } catch {
-               
+
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
     }
+    
+    
 
 }

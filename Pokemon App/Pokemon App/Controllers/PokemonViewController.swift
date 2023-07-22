@@ -2,7 +2,8 @@ import UIKit
 import SDWebImage
 
 class PokemonViewController: UIViewController {
-
+    var activityIndicator: UIActivityIndicatorView?
+    
     private let pokemonImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -45,6 +46,21 @@ class PokemonViewController: UIViewController {
         heightLabel.textAlignment = .left
         return heightLabel
     }()
+
+    func showLoader() {
+        if activityIndicator == nil {
+            activityIndicator = UIActivityIndicatorView(style: .large)
+            activityIndicator?.center = CGPoint(x: 125, y: 125)
+            activityIndicator?.startAnimating()
+            pokemonImage.addSubview(activityIndicator!)
+        }
+    }
+    
+    func hideLoader() {
+        activityIndicator?.stopAnimating()
+        activityIndicator?.removeFromSuperview()
+        activityIndicator = nil
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -97,9 +113,26 @@ class PokemonViewController: UIViewController {
         pokemonHeight.text = "Height: \(model.height) cm"
         pokemonWeight.text = "Weight: \(model.weight) kg"
         pokemonType.text = "Type: \(model.type)"
+        if let image = model.image{
+            pokemonImage.image = image
+            print("Image")
+        } else {
+            guard let url = URL(string: model.imageURL) else {return}
+            loadImage(with: url)
 
-        guard let url = URL(string: model.picture) else {return}
-        pokemonImage.sd_setImage(with: url)
+        }
+       
+    }
+    
+    func loadImage(with url: URL) {
+        showLoader()
+        
+        pokemonImage.sd_setImage(with: url) { [weak self] (image, error, cacheType, url) in
+            self?.hideLoader()
+            if let error = error {
+                print("Ошибка при загрузке изображения: \(error.localizedDescription)")
+            }
+        }
     }
 
 }
