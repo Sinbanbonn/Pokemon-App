@@ -2,12 +2,12 @@ import CoreData
 import UIKit
 import SDWebImage
 
-//переименовать контейнер
-class CoreDataManager {
+final class CoreDataManager {
     static let shared = CoreDataManager()
+    private init(){}
     
     lazy var container: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "LocalDB")
+        let container = NSPersistentContainer(name: "ModelStore")
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error {
                 fatalError("Failed to load CoreData store: \(error)")
@@ -42,7 +42,6 @@ class CoreDataManager {
         do {
             return try context.fetch(fetchRequest)
         } catch {
-            print("Failed to fetch PokemonListItems: \(error)")
             return []
         }
     }
@@ -54,28 +53,14 @@ class CoreDataManager {
         newPokemon.height = Int64(pokemon.height)
         newPokemon.weight = Int64(pokemon.weight)
         newPokemon.type = pokemon.types.map { $0.type.name }.joined(separator: ", ")
-        newPokemon.imageURL = "https://example.com/default_image.png"
-        if let imageURL = URL(string: pokemon.sprites.other.officialArtwork.frontDefault) {
-            URLSession.shared.dataTask(with: imageURL) { data, response, error in
-                guard let data = data, error == nil else {
-                    return
-                }
-                newPokemon.image = UIImage(data: data)
-                do {
-                    try self.context.save()
-                } catch {
-                    fatalError("Failed to save Core Data context: \(error)")
-                }
-            }
-            
+        newPokemon.imageURL = pokemon.sprites.other.officialArtwork.frontDefault
+        do {
+            try self.context.save()
+        } catch {
+            fatalError("Failed to save Core Data context: \(error)")
         }
-        
-        else {
-            print("Invalid imageURL")
-        }
+       
     }
-    
-    
     
     func updatePokemonListItem(_ item: PokemonItem, newName: String) {
         item.name = newName
@@ -85,7 +70,6 @@ class CoreDataManager {
             fatalError("Failed to save Core Data context: \(error)")
         }
     }
-    
     
     func clearoreData() {
         DispatchQueue.main.async {
