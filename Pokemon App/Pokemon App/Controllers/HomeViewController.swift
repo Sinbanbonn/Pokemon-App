@@ -6,7 +6,6 @@ final class HomeViewController: UIViewController {
 
     private var titles: [PokemonViewModel] = [PokemonViewModel]()
     private let pokSer = NetworkService()
-    
     private let pokemonTable: UITableView = {
         let table = UITableView()
         table.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
@@ -23,19 +22,17 @@ final class HomeViewController: UIViewController {
         view.backgroundColor = .systemBackground
         let customTitleView = TitleView()
         customTitleView.titleLabel.text = "Pokemon List"
-        
         navigationItem.titleView = customTitleView
-        
         view.addSubview(pokemonTable)
         pokemonTable.delegate = self
         pokemonTable.dataSource = self
-        if isConnectedToNetwork{
+        if isConnectedToNetwork
+        {
             CoreDataManager.shared.clearoreData()
         }
         fetchData()
-        
-        
     }
+    
     func isInternetAvailable() -> Bool {
         let reachability = try! Reachability()
         return reachability.connection != .unavailable
@@ -68,7 +65,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TitleTableViewCell.identifier, for: indexPath) as? TitleTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: TitleTableViewCell.identifier,
+            for: indexPath) as? TitleTableViewCell else {
             return UITableViewCell()
         }
 
@@ -105,4 +104,3 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     }
 }
-

@@ -9,14 +9,13 @@ var isConnectedToNetwork: Bool {
 final class PokemonManager {
     private let networkManager = NetworkService()
     static let shared = PokemonManager()
-    var counter: Int = 0
+    var paginationCounter: Int = 0
     private init() {}
     
     func getPokemonList(offset: Int , limit: Int = 20 ,completion: @escaping(Result<[PokemonViewModel], RequestError>) -> Void){
         var pokemonArray: [PokemonViewModel] = [PokemonViewModel]()
         if isConnectedToNetwork {
-            networkManager.getNetworkPokemonList(offset: self.counter * limit, limit: 20) { result in
-                self.counter += 1
+            networkManager.getNetworkPokemonList(offset: self.paginationCounter * limit, limit: 20) { result in
                 switch result {
                 case .success(let items):
                     let results = items.results
@@ -27,10 +26,10 @@ final class PokemonManager {
                 case .failure(let error):
                     completion(.failure(error))
                 }
-                
             }
+            
             DispatchQueue.global(qos: .background).sync {
-                for i in counter*offset...counter*(offset+limit) {
+                for i in paginationCounter*offset...(paginationCounter+1)*(limit) {
                     self.networkManager.getNetworkPokemonInfo(id: i) { result in
                         switch result{
                         case .success(let pokemon):
@@ -41,21 +40,25 @@ final class PokemonManager {
                     }
                 }
             }
+            self.paginationCounter += 1
         }
         else {
-            let entities = CoreDataManager.shared.fetchPokemonListItems()
+            var entities: [PokemonItem] = [PokemonItem]()
+            if paginationCounter == 0 {
+                 entities = CoreDataManager.shared.fetchPokemonListItems()
+            }
             if !entities.isEmpty {
-                for i in self.counter * limit...(self.counter + 1) * limit {
+                for i in self.paginationCounter * limit...(self.paginationCounter + 1) * limit {
                     if i >= entities.count { return}
                     pokemonArray.append(PokemonViewModel(titleName: entities[i].name!))
                 }
-                counter += 1
+                paginationCounter += 1
                 completion(.success(pokemonArray))
-            }else {
+            }
+            else {
                 completion(.failure(.notFound))
             }
         }
-        
     }
     
     func getPokemonDetails(id: Int, completion: @escaping(Result<PokemonDetailViewModel, RequestError>) -> Void) {
