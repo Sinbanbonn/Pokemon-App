@@ -1,10 +1,3 @@
-//
-//  SceneDelegate.swift
-//  Pokemon App
-//
-//  Created by Андрей Логвинов on 7/17/23.
-//
-
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {

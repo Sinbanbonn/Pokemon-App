@@ -1,9 +1,3 @@
-//
-//  CustomTitleView.swift
-//  Pokemon App
-//
-//  Created by Андрей Логвинов on 7/21/23.
-//
 import UIKit
 import Foundation
 
@@ -12,12 +6,14 @@ class TitleView: UIView {
         let label = UILabel()
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         if isConnectedToNetwork {
             imageView.image = UIImage(systemName: "wifi")
         }else {
@@ -38,11 +34,6 @@ class TitleView: UIView {
     private func setupViews() {
         addSubview(titleLabel)
         addSubview(imageView)
-        
-        // Add constraints to position the label and image view
-        // You can customize the layout as needed
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),

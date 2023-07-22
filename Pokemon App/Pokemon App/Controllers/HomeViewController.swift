@@ -2,7 +2,7 @@ import UIKit
 import Reachability
 import CoreData
 
-class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController {
 
     private var titles: [PokemonViewModel] = [PokemonViewModel]()
     private let pokSer = NetworkService()
@@ -22,19 +22,18 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         let customTitleView = TitleView()
-            customTitleView.titleLabel.text = "Pokemon List"
-           
-            
-            navigationItem.titleView = customTitleView
-
+        customTitleView.titleLabel.text = "Pokemon List"
+        
+        navigationItem.titleView = customTitleView
+        
         view.addSubview(pokemonTable)
         pokemonTable.delegate = self
         pokemonTable.dataSource = self
-        //title = "Pokemon List"
-        
+        if isConnectedToNetwork{
+            CoreDataManager.shared.clearoreData()
+        }
         fetchData()
-        //CoreDataManager.shared.clearoreData()
-       print(isInternetAvailable())
+        
         
     }
     func isInternetAvailable() -> Bool {
@@ -91,8 +90,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        print(indexPath.row)
-        let pokemon = titles[indexPath.row]
         PokemonManager.shared.getPokemonDetails(id: indexPath.row) { [weak self] result in
             switch result {
             case .success(let pokemon):

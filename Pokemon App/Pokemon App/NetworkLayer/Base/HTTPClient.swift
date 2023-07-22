@@ -27,7 +27,6 @@ extension HTTPClient {
             return
         }
         
-        print(url)
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = endpoint.method.rawValue
         request.allHTTPHeaderFields = endpoint.header

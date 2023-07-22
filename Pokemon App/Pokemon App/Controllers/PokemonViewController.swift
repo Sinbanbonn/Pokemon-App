@@ -1,7 +1,7 @@
 import UIKit
 import SDWebImage
 
-class PokemonViewController: UIViewController {
+final class PokemonViewController: UIViewController {
     var activityIndicator: UIActivityIndicatorView?
     
     private let pokemonImage: UIImageView = {
@@ -113,13 +113,12 @@ class PokemonViewController: UIViewController {
         pokemonHeight.text = "Height: \(model.height) cm"
         pokemonWeight.text = "Weight: \(model.weight) kg"
         pokemonType.text = "Type: \(model.type)"
-        if let image = model.image{
-            pokemonImage.image = image
-            print("Image")
-        } else {
+        if isConnectedToNetwork {
             guard let url = URL(string: model.imageURL) else {return}
             loadImage(with: url)
-
+        } else {
+            pokemonImage.image = UIImage(systemName: "tortoise")
+            pokemonImage.tintColor = UIColor.systemBackground
         }
        
     }

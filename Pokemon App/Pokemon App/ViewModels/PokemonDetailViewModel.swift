@@ -1,5 +1,4 @@
 import Foundation
-import UIKit
 
 struct PokemonDetailViewModel {
     let imageURL: String
@@ -7,6 +6,4 @@ struct PokemonDetailViewModel {
     let height: Int
     let weight: Int
     let type: String
-    let image: UIImage?
-
 }

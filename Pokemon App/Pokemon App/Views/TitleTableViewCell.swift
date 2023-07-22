@@ -10,13 +10,14 @@ class TitleTableViewCell: UITableViewCell {
 
     weak var delegate: TitleTableViewCellDelegate?
 
-    private let playTitleButton: UIButton = {
-        let button = UIButton()
-        let image = UIImage(systemName: "pawprint",
-                            withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))
-        button.setImage(image, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    private let playTitleButton: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(systemName: "lizard.fill")
+        imageView.contentMode = .scaleAspectFill
+        imageView.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
+        imageView.tintColor = .systemGreen
+        return imageView
     }()
 
     private let titleLabel: UILabel = {
@@ -34,7 +35,7 @@ class TitleTableViewCell: UITableViewCell {
         applyConstraints()
     }
 
-    private func  applyConstraints() {
+    private func applyConstraints() {
 
         let titleLabelConstraints = [
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -43,7 +44,7 @@ class TitleTableViewCell: UITableViewCell {
 
         let playTitleButtonConstraints = [
             playTitleButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            playTitleButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            playTitleButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ]
 
         NSLayoutConstraint.activate(titleLabelConstraints)

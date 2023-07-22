@@ -12,8 +12,7 @@ enum RequestError: Error {
     case serviceUnavailable
     case gatewayTimeout
     case other(Int)
-//.noResponse
-//.decode
+
     var description: String {
         switch self {
         case .invalidURL:
