@@ -1,6 +1,5 @@
 import UIKit
-import Reachability
-import CoreData
+
 
 final class HomeViewController: UIViewController {
 
@@ -31,11 +30,6 @@ final class HomeViewController: UIViewController {
         }
 
         fetchData()
-    }
-
-    func isInternetAvailable() -> Bool {
-        let reachability = try! Reachability()
-        return reachability.connection != .unavailable
     }
 
     override func viewDidLayoutSubviews() {
