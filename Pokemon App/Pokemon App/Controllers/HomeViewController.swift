@@ -21,23 +21,23 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         let customTitleView = TitleView()
-        customTitleView.titleLabel.text = "Pokemon List"
         navigationItem.titleView = customTitleView
         view.addSubview(pokemonTable)
         pokemonTable.delegate = self
         pokemonTable.dataSource = self
-        if isConnectedToNetwork
-        {
-            CoreDataManager.shared.clearoreData()
+
+        if PokemonManager.shared.isConnectedToNetwork {
+            CoreDataManager.shared.clearСoreData()
         }
+
         fetchData()
     }
-    
+
     func isInternetAvailable() -> Bool {
         let reachability = try! Reachability()
         return reachability.connection != .unavailable
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         pokemonTable.frame = view.bounds
@@ -48,6 +48,9 @@ final class HomeViewController: UIViewController {
             switch result {
             case .success(let titles):
                 self?.titles += titles
+                if titles.isEmpty {
+                    self?.showTextFieldAlert()
+                }
                 DispatchQueue.main.async {
                     self?.pokemonTable.reloadData()
                 }
@@ -79,11 +82,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-    
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastElement = titles.count - 1
         if indexPath.row == lastElement {
-           fetchData()
+            fetchData()
         }
     }
 
@@ -101,6 +104,16 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 print(error.localizedDescription)
             }
         }
-
     }
+
+    func showTextFieldAlert() {
+        let alertController = UIAlertController(title: "Attention",
+                                                message: "No available information source",
+                                                preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: "Okay", style: .default) { _ in }
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct PokemonPreview: Codable {
+struct PokemonDetail: Codable {
     let name: String
     let height: Int
     let weight: Int
@@ -22,7 +22,7 @@ struct Sprites: Codable {
     let frontDefault: String
     let other: Other
 
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case frontDefault = "front_default"
         case other
     }
@@ -31,7 +31,7 @@ struct Sprites: Codable {
 struct Other: Codable {
     let officialArtwork: OfficialArtwork
     
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case officialArtwork = "official-artwork"
     }
 }

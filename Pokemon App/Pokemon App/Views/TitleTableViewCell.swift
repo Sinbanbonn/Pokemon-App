@@ -1,14 +1,8 @@
 import UIKit
 
-protocol TitleTableViewCellDelegate: AnyObject {
-    func titleTableViewCellDidTapCell(_ cell: TitleTableViewCell, viewModel: PokemonDetailViewModel)
-}
-
-class TitleTableViewCell: UITableViewCell {
+final class TitleTableViewCell: UITableViewCell {
 
     static let identifier = "TitleTableViewCell"
-
-    weak var delegate: TitleTableViewCellDelegate?
 
     private let playTitleButton: UIImageView = {
         let imageView = UIImageView()

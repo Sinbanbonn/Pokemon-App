@@ -2,7 +2,7 @@ import Foundation
 
 protocol PokemonServiciable {
     func getNetworkPokemonList(offset: Int, limit: Int, completion: @escaping (Result<PokemonList, RequestError>) -> Void)
-    func getNetworkPokemonInfo(id: Int, completion: @escaping (Result<PokemonPreview, RequestError>) -> Void)
+    func getNetworkPokemonInfo(id: Int, completion: @escaping (Result<PokemonDetail, RequestError>) -> Void)
 }
 
 struct NetworkService: HTTPClient, PokemonServiciable {
@@ -12,9 +12,9 @@ struct NetworkService: HTTPClient, PokemonServiciable {
                     completion: completion)
     }
     
-    func getNetworkPokemonInfo(id: Int, completion: @escaping (Result<PokemonPreview, RequestError>) -> Void) {
+    func getNetworkPokemonInfo(id: Int, completion: @escaping (Result<PokemonDetail, RequestError>) -> Void) {
         sendRequest(endpoint: PokemonEndpoint.pokemonDetails(id: id),
-                    responseModel: PokemonPreview.self,
+                    responseModel: PokemonDetail.self,
                     completion: completion)
     }
     

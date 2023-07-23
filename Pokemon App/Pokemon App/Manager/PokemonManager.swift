@@ -1,18 +1,19 @@
 import Foundation
 import Reachability
 
-let reachability = try! Reachability()
-var isConnectedToNetwork: Bool {
-        return reachability.connection == .unavailable
-}
-
 final class PokemonManager {
     private let networkManager = NetworkService()
     static let shared = PokemonManager()
-    var paginationCounter: Int = 0
     private init() {}
     
-    func getPokemonList(offset: Int , limit: Int = 20 ,completion: @escaping(Result<[PokemonViewModel], RequestError>) -> Void){
+    let reachability = try! Reachability()
+    var isConnectedToNetwork: Bool {
+        return reachability.connection != .unavailable
+    }
+    
+    var paginationCounter: Int = 0
+    
+    func getPokemonList(offset: Int , limit: Int = 20 ,completion: @escaping(Result<[PokemonViewModel], Error>) -> Void){
         var pokemonArray: [PokemonViewModel] = [PokemonViewModel]()
         if isConnectedToNetwork {
             networkManager.getNetworkPokemonList(offset: self.paginationCounter * limit, limit: 20) { result in
@@ -34,7 +35,8 @@ final class PokemonManager {
                         switch result{
                         case .success(let pokemon):
                             CoreDataManager.shared.addPokemonToCoreData(pokemon: pokemon)
-                        case .failure(let error): break
+                        case .failure(let error):
+                            print(error.localizedDescription)
                             
                         }
                     }
@@ -44,9 +46,7 @@ final class PokemonManager {
         }
         else {
             var entities: [PokemonItem] = [PokemonItem]()
-            if paginationCounter == 0 {
-                 entities = CoreDataManager.shared.fetchPokemonListItems()
-            }
+            entities = CoreDataManager.shared.fetchPokemonListItems()
             if !entities.isEmpty {
                 for i in self.paginationCounter * limit...(self.paginationCounter + 1) * limit {
                     if i >= entities.count { return}
@@ -56,12 +56,12 @@ final class PokemonManager {
                 completion(.success(pokemonArray))
             }
             else {
-                completion(.failure(.notFound))
+                completion(.failure(RequestError.notFound))
             }
         }
     }
     
-    func getPokemonDetails(id: Int, completion: @escaping(Result<PokemonDetailViewModel, RequestError>) -> Void) {
+    func getPokemonDetails(id: Int, completion: @escaping(Result<PokemonDetailViewModel, Error>) -> Void) {
         if isConnectedToNetwork {
             networkManager.getNetworkPokemonInfo(id: id) { result in
                 switch result {
@@ -91,8 +91,9 @@ final class PokemonManager {
                     type: entities[id].type!
                 )
                 completion(.success(pokemonViewModel))
-            }else {
-                completion(.failure(.notFound))
+            }
+            else {
+                completion(.failure(RequestError.notFound))
             }
         }
     }

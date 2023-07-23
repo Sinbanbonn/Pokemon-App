@@ -5,7 +5,6 @@ enum PokemonEndpoint {
     case pokemonDetails(id: Int)
 }
 
-
 extension PokemonEndpoint: Endpoint {
     var host: String {
         switch self {

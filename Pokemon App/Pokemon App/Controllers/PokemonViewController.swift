@@ -3,7 +3,7 @@ import SDWebImage
 
 final class PokemonViewController: UIViewController {
     var activityIndicator: UIActivityIndicatorView?
-    
+
     private let pokemonImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +55,7 @@ final class PokemonViewController: UIViewController {
             pokemonImage.addSubview(activityIndicator!)
         }
     }
-    
+
     func hideLoader() {
         activityIndicator?.stopAnimating()
         activityIndicator?.removeFromSuperview()
@@ -76,36 +76,42 @@ final class PokemonViewController: UIViewController {
     }
 
     private func applyConstraints() {
-
-       let pokemonImageConstraints = [pokemonImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+        let pokemonImageConstraints = [
+            pokemonImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             pokemonImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pokemonImage.widthAnchor.constraint(equalToConstant: 250),
-            pokemonImage.heightAnchor.constraint(equalToConstant: 250)]
+            pokemonImage.heightAnchor.constraint(equalToConstant: 250)
+        ]
 
-        let pokemonNameConstraints =
-            [pokemonName.topAnchor.constraint(equalTo: pokemonImage.bottomAnchor, constant: 20),
+        let pokemonNameConstraints = [
+            pokemonName.topAnchor.constraint(equalTo: pokemonImage.bottomAnchor, constant: 20),
             pokemonName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
+            pokemonName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
 
-        let pokemonWeightConstraints =
-            [pokemonWeight.topAnchor.constraint(equalTo: pokemonName.bottomAnchor, constant: 12),
+        let pokemonWeightConstraints = [
+            pokemonWeight.topAnchor.constraint(equalTo: pokemonName.bottomAnchor, constant: 12),
             pokemonWeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonWeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
-        let pokemonHeightConstraints =
-            [pokemonHeight.topAnchor.constraint(equalTo: pokemonWeight.bottomAnchor, constant: 12),
+            pokemonWeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
+
+        let pokemonHeightConstraints = [
+            pokemonHeight.topAnchor.constraint(equalTo: pokemonWeight.bottomAnchor, constant: 12),
             pokemonHeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonHeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
-        let pokemonTypeConstraints =
-            [pokemonType.topAnchor.constraint(equalTo: pokemonHeight.bottomAnchor, constant: 12),
+            pokemonHeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
+
+        let pokemonTypeConstraints = [
+            pokemonType.topAnchor.constraint(equalTo: pokemonHeight.bottomAnchor, constant: 12),
             pokemonType.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonType.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)]
+            pokemonType.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
 
         NSLayoutConstraint.activate(pokemonImageConstraints)
         NSLayoutConstraint.activate(pokemonNameConstraints)
         NSLayoutConstraint.activate(pokemonHeightConstraints)
         NSLayoutConstraint.activate(pokemonWeightConstraints)
         NSLayoutConstraint.activate(pokemonTypeConstraints)
-
     }
 
     func configure(with model: PokemonDetailViewModel) {
@@ -113,25 +119,23 @@ final class PokemonViewController: UIViewController {
         pokemonHeight.text = "Height: \(model.height) cm"
         pokemonWeight.text = "Weight: \(model.weight) kg"
         pokemonType.text = "Type: \(model.type)"
-        if isConnectedToNetwork {
-            guard let url = URL(string: model.imageURL) else {return}
+        if PokemonManager.shared.isConnectedToNetwork {
+            guard let url = URL(string: model.imageURL) else { return }
             loadImage(with: url)
         } else {
             pokemonImage.image = UIImage(systemName: "tortoise")
             pokemonImage.tintColor = UIColor.systemBackground
         }
-       
     }
-    
+
     func loadImage(with url: URL) {
         showLoader()
-        
-        pokemonImage.sd_setImage(with: url) { [weak self] (image, error, cacheType, url) in
+
+        pokemonImage.sd_setImage(with: url) { [weak self] (_, error, _, _) in
             self?.hideLoader()
             if let error = error {
-                print("Ошибка при загрузке изображения: \(error.localizedDescription)")
+                print("Failed to fetch image: \(error.localizedDescription)")
             }
         }
     }
-
 }

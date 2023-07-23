@@ -1,6 +1,4 @@
 import CoreData
-import UIKit
-import SDWebImage
 
 final class CoreDataManager {
     static let shared = CoreDataManager()
@@ -34,8 +32,6 @@ final class CoreDataManager {
         }
     }
     
-    // MARK: - should return a mistake in allert
-    
     func fetchPokemonListItems() -> [PokemonItem] {
         let fetchRequest: NSFetchRequest<PokemonItem> = PokemonItem.fetchRequest()
         
@@ -46,8 +42,7 @@ final class CoreDataManager {
         }
     }
     
-
-    func addPokemonToCoreData(pokemon: PokemonPreview) {
+    func addPokemonToCoreData(pokemon: PokemonDetail) {
         let newPokemon = PokemonItem(context: context)
         newPokemon.name = pokemon.name
         newPokemon.height = Int64(pokemon.height)
@@ -59,7 +54,6 @@ final class CoreDataManager {
         } catch {
             fatalError("Failed to save Core Data context: \(error)")
         }
-       
     }
     
     func updatePokemonListItem(_ item: PokemonItem, newName: String) {
@@ -71,7 +65,7 @@ final class CoreDataManager {
         }
     }
     
-    func clearoreData() {
+    func clearСoreData() {
         DispatchQueue.main.async {
             let entities = self.fetchPokemonListItems()
             for entity in entities {
@@ -85,7 +79,5 @@ final class CoreDataManager {
             }
         }
     }
-    
-    
     
 }
