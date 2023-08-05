@@ -61,12 +61,12 @@ final class PokemonManager {
         }
     }
     
-    func getPokemonDetails(id: Int, completion: @escaping(Result<PokemonDetailViewModel, Error>) -> Void) {
+    func getPokemonDetails(id: Int, completion: @escaping(Result<PokemonDetail, Error>) -> Void) {
         if isConnectedToNetwork {
             networkManager.getNetworkPokemonInfo(id: id) { result in
                 switch result {
                 case .success(let pokemon):
-                    let pokemonViewModel = PokemonDetailViewModel(
+                    let pokemonViewModel = PokemonDetail(
                         imageURL: pokemon.sprites.other.officialArtwork.frontDefault,
                         name: pokemon.name.capitalizeFirstLetter(),
                         height: pokemon.height,
@@ -83,7 +83,7 @@ final class PokemonManager {
         else {
             let entities = CoreDataManager.shared.fetchPokemonListItems()
             if !entities.isEmpty {
-                let pokemonViewModel = PokemonDetailViewModel(
+                let pokemonViewModel = PokemonDetail(
                     imageURL: entities[id].imageURL!,
                     name: entities[id].name!.capitalizeFirstLetter(),
                     height: Int(entities[id].height),

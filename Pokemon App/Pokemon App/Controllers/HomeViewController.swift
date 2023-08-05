@@ -3,8 +3,9 @@ import UIKit
 
 final class HomeViewController: UIViewController {
 
-    private var titles: [PokemonViewModel] = [PokemonViewModel]()
-    private let pokSer = NetworkService()
+    private let viewModel = TitlesViewModel()
+    
+    weak var mainCoordinator: MainCoordinator?
     private let pokemonTable: UITableView = {
         let table = UITableView()
         table.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
@@ -38,18 +39,10 @@ final class HomeViewController: UIViewController {
     }
 
     private func fetchData() {
-        PokemonManager.shared.getPokemonList(offset: 0) { [weak self] result in
-            switch result {
-            case .success(let titles):
-                self?.titles += titles
-                if titles.isEmpty {
-                    self?.showTextFieldAlert()
-                }
-                DispatchQueue.main.async {
-                    self?.pokemonTable.reloadData()
-                }
-            case .failure(let error):
-                print(error)
+        viewModel.fetchData {
+            DispatchQueue.main.async {
+                self.pokemonTable.reloadData()
+                print(self.viewModel.titles.count)
             }
         }
     }
@@ -58,7 +51,7 @@ final class HomeViewController: UIViewController {
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return titles.count
+        return viewModel.titles.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -67,8 +60,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             for: indexPath) as? TitleTableViewCell else {
             return UITableViewCell()
         }
-
-        let title = titles[indexPath.row]
+      
+        let title = viewModel.titles[indexPath.row]
         cell.configure(with: title)
         return cell
     }
@@ -78,7 +71,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let lastElement = titles.count - 1
+        let lastElement = viewModel.titles.count - 1
         if indexPath.row == lastElement {
             fetchData()
         }
@@ -86,18 +79,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        PokemonManager.shared.getPokemonDetails(id: indexPath.row) { [weak self] result in
-            switch result {
-            case .success(let pokemon):
-                DispatchQueue.main.async {
-                    let vc = PokemonViewController()
-                    vc.configure(with: pokemon)
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
+        mainCoordinator?.showDetails(id: indexPath.row)
     }
 
     func showTextFieldAlert() {

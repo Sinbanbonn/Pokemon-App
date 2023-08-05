@@ -42,7 +42,7 @@ final class CoreDataManager {
         }
     }
     
-    func addPokemonToCoreData(pokemon: PokemonDetail) {
+    func addPokemonToCoreData(pokemon: PokemonDetailDTO) {
         let newPokemon = PokemonItem(context: context)
         newPokemon.name = pokemon.name
         newPokemon.height = Int64(pokemon.height)

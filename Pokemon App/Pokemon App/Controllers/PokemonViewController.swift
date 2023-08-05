@@ -113,21 +113,29 @@ final class PokemonViewController: UIViewController {
         NSLayoutConstraint.activate(pokemonWeightConstraints)
         NSLayoutConstraint.activate(pokemonTypeConstraints)
     }
-
-    func configure(with model: PokemonDetailViewModel) {
-        pokemonName.text = model.name
-        pokemonHeight.text = "Height: \(model.height) cm"
-        pokemonWeight.text = "Weight: \(model.weight) kg"
-        pokemonType.text = "Type: \(model.type)"
-        if PokemonManager.shared.isConnectedToNetwork {
-            guard let url = URL(string: model.imageURL) else { return }
-            loadImage(with: url)
-        } else {
-            pokemonImage.image = UIImage(systemName: "tortoise")
-            pokemonImage.tintColor = UIColor.systemBackground
+    
+    func configure(with id: Int) {
+        let viewModel = PokemonDetailViewModel()
+        viewModel.fetchData(with: id) {
+            guard let model = viewModel.viewModel else { return }
+            DispatchQueue.main.async {
+                self.pokemonName.text = model.name
+                self.pokemonHeight.text = "Height: \(model.height) cm"
+                self.pokemonWeight.text = "Weight: \(model.weight) kg"
+                self.pokemonType.text = "Type: \(model.type)"
+                if PokemonManager.shared.isConnectedToNetwork {
+                    guard let url = URL(string: model.imageURL) else { return }
+                    self.loadImage(with: url)
+                } else {
+                    self.pokemonImage.image = UIImage(systemName: "tortoise")
+                    self.pokemonImage.tintColor = UIColor.systemBackground
+                }
+            }
+            
+            
         }
     }
-
+    
     func loadImage(with url: URL) {
         showLoader()
 
