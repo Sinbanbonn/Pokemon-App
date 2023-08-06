@@ -116,8 +116,8 @@ final class PokemonViewController: UIViewController {
     
     func configure(with id: Int) {
         let viewModel = PokemonDetailViewModel()
-        viewModel.fetchData(with: id) {
-            guard let model = viewModel.viewModel else { return }
+        Task {
+            let model = try await viewModel.fetchData(with: id)
             DispatchQueue.main.async {
                 self.pokemonName.text = model.name
                 self.pokemonHeight.text = "Height: \(model.height) cm"
@@ -130,9 +130,8 @@ final class PokemonViewController: UIViewController {
                     self.pokemonImage.image = UIImage(systemName: "tortoise")
                     self.pokemonImage.tintColor = UIColor.systemBackground
                 }
+                
             }
-            
-            
         }
     }
     

@@ -16,15 +16,12 @@ class PokemonDetailViewModel {
         self.viewModel = viewModel
     }
     
-    public func fetchData(with id: Int, completion: @escaping(() -> Void)) {
-        PokemonManager.shared.getPokemonDetails(id: id) { [weak self] result in
-            switch result {
-            case .success(let pokemon):
-                self?.viewModel = pokemon
-                completion()
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
+    public func fetchData(with id: Int) async throws -> PokemonDetail {
+        do {
+            return try await PokemonManager.shared.getPokemonDetails(id: id)
+        }
+        catch {
+            throw error
         }
     }
 }

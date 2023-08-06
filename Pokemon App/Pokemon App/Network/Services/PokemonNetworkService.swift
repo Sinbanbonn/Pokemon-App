@@ -1,23 +1,23 @@
 import Foundation
 
 protocol PokemonServiciable {
-    func getNetworkPokemonList(offset: Int, limit: Int, completion: @escaping (Result<PokemonList, RequestError>) -> Void)
-    func getNetworkPokemonInfo(id: Int, completion: @escaping (Result<PokemonDetailDTO, RequestError>) -> Void)
+    func getNetworkPokemonList(offset: Int, limit: Int) async throws ->  PokemonList
+    func getNetworkPokemonInfo(id: Int) async throws -> PokemonDetailDTO
 }
 
 struct NetworkService: HTTPClient, PokemonServiciable {
-    func getNetworkPokemonList(offset: Int, limit: Int, completion: @escaping (Result<PokemonList, RequestError>) -> Void) {
-        sendRequest(endpoint: PokemonEndpoint.pokemonList(offset: offset, limit: limit),
-                    responseModel: PokemonList.self,
-                    completion: completion)
+    func getNetworkPokemonInfo(id: Int) async  throws -> PokemonDetailDTO {
+        try await sendRequest(endpoint: PokemonEndpoint.pokemonDetails(id: id),
+                          responseModel: PokemonDetailDTO.self)
     }
     
-    func getNetworkPokemonInfo(id: Int, completion: @escaping (Result<PokemonDetailDTO, RequestError>) -> Void) {
-        sendRequest(endpoint: PokemonEndpoint.pokemonDetails(id: id),
-                    responseModel: PokemonDetailDTO.self,
-                    completion: completion)
+    func getNetworkPokemonList(offset: Int, limit: Int) async throws -> PokemonList {
+        try await sendRequest(endpoint: PokemonEndpoint.pokemonList(offset: offset,limit: limit),
+                          responseModel: PokemonList.self)
     }
     
     
-
+    
+    
+    
 }

@@ -4,7 +4,7 @@ import UIKit
 final class HomeViewController: UIViewController {
 
     private let viewModel = TitlesViewModel()
-    
+    private var titles: [PokemonViewModel] = []
     weak var mainCoordinator: MainCoordinator?
     private let pokemonTable: UITableView = {
         let table = UITableView()
@@ -29,21 +29,28 @@ final class HomeViewController: UIViewController {
         if PokemonManager.shared.isConnectedToNetwork {
             CoreDataManager.shared.clearСoreData()
         }
-
-        fetchData()
+        else {
+            mainCoordinator?.showTextFieldAlert()
+        }
+        Task{
+            try await fetchData()
+        }
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         pokemonTable.frame = view.bounds
     }
-
-    private func fetchData() {
-        viewModel.fetchData {
+    
+    private func fetchData() async throws {
+        do {
+            titles = try await viewModel.fetchData()
             DispatchQueue.main.async {
                 self.pokemonTable.reloadData()
-                print(self.viewModel.titles.count)
             }
+        }
+        catch {
+            throw error
         }
     }
 
@@ -51,7 +58,7 @@ final class HomeViewController: UIViewController {
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.titles.count
+        return titles.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -61,7 +68,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
       
-        let title = viewModel.titles[indexPath.row]
+        let title = titles[indexPath.row]
         cell.configure(with: title)
         return cell
     }
@@ -73,7 +80,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastElement = viewModel.titles.count - 1
         if indexPath.row == lastElement {
-            fetchData()
+            Task{
+                try await fetchData()
+            }
         }
     }
 
@@ -81,15 +90,4 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         mainCoordinator?.showDetails(id: indexPath.row)
     }
-
-    func showTextFieldAlert() {
-        let alertController = UIAlertController(title: "Attention",
-                                                message: "No available information source",
-                                                preferredStyle: .alert)
-
-        let okAction = UIAlertAction(title: "Okay", style: .default) { _ in }
-        alertController.addAction(okAction)
-        present(alertController, animated: true, completion: nil)
-    }
-
 }

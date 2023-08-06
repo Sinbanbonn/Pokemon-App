@@ -13,71 +13,42 @@ final class PokemonManager {
     
     var paginationCounter: Int = 0
     
-    func getPokemonList(offset: Int , limit: Int = 20 ,completion: @escaping(Result<[PokemonViewModel], Error>) -> Void){
+    func getPokemonList(offset: Int , limit: Int = 20) async throws-> [PokemonViewModel] {
         var pokemonArray: [PokemonViewModel] = [PokemonViewModel]()
         if isConnectedToNetwork {
-            networkManager.getNetworkPokemonList(offset: self.paginationCounter * limit, limit: 20) { result in
-                switch result {
-                case .success(let items):
-                    let results = items.results
-                    for result in results {
-                        pokemonArray.append(PokemonViewModel(titleName: result.name))
-                    }
-                    completion(.success(pokemonArray))
-                case .failure(let error):
-                    completion(.failure(error))
+            do{
+                let pokemons = try await networkManager.getNetworkPokemonList(offset: self.paginationCounter * limit, limit: 20).results
+                
+                for pokemon in pokemons {
+                    pokemonArray.append(PokemonViewModel(titleName: pokemon.name))
                 }
+                self.paginationCounter += 1
+                return pokemonArray
             }
-            
-            DispatchQueue.global(qos: .background).sync {
-                for i in paginationCounter*offset...(paginationCounter+1)*(limit) {
-                    self.networkManager.getNetworkPokemonInfo(id: i) { result in
-                        switch result{
-                        case .success(let pokemon):
-                            CoreDataManager.shared.addPokemonToCoreData(pokemon: pokemon)
-                        case .failure(let error):
-                            print(error.localizedDescription)
-                            
-                        }
-                    }
-                }
+            catch {
+                throw error
             }
-            self.paginationCounter += 1
         }
+        
         else {
-            var entities: [PokemonItem] = [PokemonItem]()
-            entities = CoreDataManager.shared.fetchPokemonListItems()
-            if !entities.isEmpty {
-                for i in self.paginationCounter * limit...(self.paginationCounter + 1) * limit {
-                    if i >= entities.count { return}
-                    pokemonArray.append(PokemonViewModel(titleName: entities[i].name!))
-                }
-                paginationCounter += 1
-                completion(.success(pokemonArray))
-            }
-            else {
-                completion(.failure(RequestError.notFound))
-            }
+            return []
         }
     }
     
-    func getPokemonDetails(id: Int, completion: @escaping(Result<PokemonDetail, Error>) -> Void) {
+    func getPokemonDetails(id: Int) async throws -> PokemonDetail {
         if isConnectedToNetwork {
-            networkManager.getNetworkPokemonInfo(id: id) { result in
-                switch result {
-                case .success(let pokemon):
-                    let pokemonViewModel = PokemonDetail(
-                        imageURL: pokemon.sprites.other.officialArtwork.frontDefault,
-                        name: pokemon.name.capitalizeFirstLetter(),
-                        height: pokemon.height,
-                        weight: pokemon.weight,
-                        type: pokemon.types.map { $0.type.name }.joined(separator: ", "))
-                    
-                    completion(.success(pokemonViewModel))
-                    
-                case .failure(let error):
-                    completion(.failure(error))
-                }
+            do {
+                let pokemon = try await networkManager.getNetworkPokemonInfo(id: id)
+                let pokemonViewModel = PokemonDetail(
+                    imageURL: pokemon.sprites.other.officialArtwork.frontDefault,
+                    name: pokemon.name.capitalizeFirstLetter(),
+                    height: pokemon.height,
+                    weight: pokemon.weight,
+                    type: pokemon.types.map { $0.type.name }.joined(separator: ", "))
+                return pokemonViewModel
+            }
+            catch {
+                throw error
             }
         }
         else {
@@ -90,10 +61,10 @@ final class PokemonManager {
                     weight: Int(entities[id].weight),
                     type: entities[id].type!
                 )
-                completion(.success(pokemonViewModel))
+                return pokemonViewModel
             }
             else {
-                completion(.failure(RequestError.notFound))
+                throw RequestError.notFound
             }
         }
     }

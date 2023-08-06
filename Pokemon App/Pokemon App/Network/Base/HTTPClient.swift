@@ -2,14 +2,12 @@ import Foundation
 
 protocol HTTPClient {
     func sendRequest<T: Decodable>(endpoint: Endpoint,
-                                   responseModel: T.Type,
-                                   completion: @escaping (Result<T, RequestError>) -> Void)
+                                   responseModel: T.Type) async throws -> T
 }
 
 extension HTTPClient {
     func sendRequest<T: Decodable>(endpoint: Endpoint,
-                                   responseModel: T.Type,
-                                   completion: @escaping (Result<T, RequestError>) -> Void){
+                                   responseModel: T.Type) async throws -> T {
         
         var urlComponents = URLComponents()
         urlComponents.scheme = endpoint.scheme
@@ -18,13 +16,12 @@ extension HTTPClient {
         
         
         guard let url = urlComponents.url else {
-            completion(.failure(.invalidURL))
-            return
+            throw RequestError.invalidURL
+            
         }
         
         guard let url = url.description.removingPercentEncoding else{
-            completion(.failure(.invalidURL))
-            return
+            throw RequestError.invalidURL
         }
         
         var request = URLRequest(url: URL(string: url)!)
@@ -35,36 +32,33 @@ extension HTTPClient {
             request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
         }
         
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                return
-            }
-            
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
             guard let response = response as? HTTPURLResponse else {
-                completion(.failure(.serviceUnavailable))
-                return
+                throw RequestError.serviceUnavailable
             }
-            
             switch response.statusCode {
             case 200...299:
                 guard let decodedResponse = try? JSONDecoder().decode(T.self, from: data) else{
-                    completion(.failure(.decode))
-                    return
+                    throw RequestError.decode
+                    
                 }
-                completion(.success(decodedResponse))
+                return decodedResponse
             case 400...499:
                 let error = handleResponseError(statusCode: response.statusCode)
-                completion(.failure(error))
+                throw error
             case 500...599:
                 let error = handleResponseError(statusCode: response.statusCode)
-                completion(.failure(error))
+                throw error
                 
             default:
-                completion(.failure(.other(response.statusCode)))
+                throw RequestError.other(response.statusCode)
             }
-            
-            
+        } catch {
+            throw RequestError.other(0)
         }
-        task.resume()
+        
     }
+    
 }
+

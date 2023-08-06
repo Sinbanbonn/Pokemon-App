@@ -41,6 +41,7 @@ final class TitleTableViewCell: UITableViewCell {
             playTitleButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ]
 
+
         NSLayoutConstraint.activate(titleLabelConstraints)
         NSLayoutConstraint.activate(playTitleButtonConstraints)
     }

@@ -28,6 +28,16 @@ class MainCoordinator: Coordinator {
         }
         
     }
+    
+    func showTextFieldAlert() {
+        let alertController = UIAlertController(title: "Attention",
+                                                message: "No available information source",
+                                                preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: "Okay", style: .default) { _ in }
+        alertController.addAction(okAction)
+        self.navigationController.present(alertController, animated: true, completion: nil)
+    }
 }
 
 

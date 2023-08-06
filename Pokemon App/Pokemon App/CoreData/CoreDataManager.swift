@@ -79,5 +79,5 @@ final class CoreDataManager {
             }
         }
     }
-    
 }
+
