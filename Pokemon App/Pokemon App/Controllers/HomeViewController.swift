@@ -1,17 +1,25 @@
 import UIKit
-
+import Combine
 
 final class HomeViewController: UIViewController {
 
-    private let viewModel = TitlesViewModel()
+    private let viewModel: PreviewViewModel
+    private let output = PassthroughSubject<PreviewViewModel.Input, Never>()
     private var titles: [PokemonViewModel] = []
-    weak var mainCoordinator: MainCoordinator?
     private let pokemonTable: UITableView = {
         let table = UITableView()
         table.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
         return table
     }()
 
+    init(viewModel: PreviewViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil , bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         pokemonTable.layoutIfNeeded()
@@ -26,34 +34,32 @@ final class HomeViewController: UIViewController {
         pokemonTable.delegate = self
         pokemonTable.dataSource = self
 
-        if PokemonManager.shared.isConnectedToNetwork {
-            CoreDataManager.shared.clearСoreData()
-        }
-        else {
-            mainCoordinator?.showTextFieldAlert()
-        }
-        Task{
-            try await fetchData()
-        }
+        observe()
+        output.send(.viewDidLoad)
+        
     }
 
+    func observe() {
+        viewModel.fetchData(input: output.eraseToAnyPublisher())
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .setPokemons(let pokemons):
+                    self?.titles = pokemons
+                    self?.pokemonTable.reloadData()
+                case .updateView:
+                    self?.pokemonTable.reloadData()
+                }
+            }.store(in: &cancellable)
+            
+    }
+    private var cancellable = Set<AnyCancellable>()
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         pokemonTable.frame = view.bounds
     }
     
-    private func fetchData() async throws {
-        do {
-            titles = try await viewModel.fetchData()
-            DispatchQueue.main.async {
-                self.pokemonTable.reloadData()
-            }
-        }
-        catch {
-            throw error
-        }
-    }
-
 }
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
@@ -77,17 +83,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return 120
     }
 
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let lastElement = viewModel.titles.count - 1
-        if indexPath.row == lastElement {
-            Task{
-                try await fetchData()
-            }
-        }
-    }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        mainCoordinator?.showDetails(id: indexPath.row)
+        viewModel.showDetail(id: indexPath.row)
     }
 }

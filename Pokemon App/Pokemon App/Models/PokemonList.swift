@@ -1,10 +1,15 @@
 import Foundation
 
 struct PokemonList: Codable {
+    
     let results: [Pokemon]
 
     enum CodingKeys: String, CodingKey {
         case results
+    }
+    
+    static var placeholder: Self {
+        return PokemonList(results: [])
     }
 }
 

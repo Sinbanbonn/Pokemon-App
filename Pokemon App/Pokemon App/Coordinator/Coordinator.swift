@@ -15,16 +15,16 @@ class MainCoordinator: Coordinator {
     var navigationController: UINavigationController = UINavigationController()
     
     func startCoordinator() {
-        let initialViewController =  HomeViewController()
-        initialViewController.mainCoordinator = self
-        navigationController.pushViewController(initialViewController, animated: false )
+//        let initialViewController =  HomeViewController()
+//        initialViewController.mainCoordinator = self
+//        navigationController.pushViewController(initialViewController, animated: false )
     }
     
     func showDetails(id: Int) {
         DispatchQueue.main.async {
-            let vc = PokemonViewController()
-            vc.configure(with: id)
-            self.navigationController.pushViewController(vc, animated: true)
+//            let vc = PokemonViewController()
+//            vc.configure(with: id)
+//            self.navigationController.pushViewController(vc, animated: true)
         }
         
     }

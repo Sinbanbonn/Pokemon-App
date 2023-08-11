@@ -3,20 +3,22 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var coordinator: MainCoordinator?
+    //var coordinator: MainCoordinator?
+
+    var rootCoordinator: RootCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
-        
-        coordinator = MainCoordinator()
-       
-        coordinator?.startCoordinator()
-        
-        window?.rootViewController = coordinator?.navigationController
+
+        let navigationController: UINavigationController = UINavigationController()
+        window?.rootViewController = navigationController
+        rootCoordinator = RootCoordinator(router: AppRouter(rootController: navigationController))
+        rootCoordinator?.start()
         window?.makeKeyAndVisible()
+        
     }
     
     func sceneDidEnterBackground(_ scene: UIScene) {

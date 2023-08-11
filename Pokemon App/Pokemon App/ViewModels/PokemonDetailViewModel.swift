@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 struct PokemonDetail {
     let imageURL: String
@@ -8,21 +9,39 @@ struct PokemonDetail {
     let type: String
 }
 
-class PokemonDetailViewModel {
+class PokemonDetailViewModel: PokemonDetailViewModelProtocol, PokemonDetailViewModelInput, PokemonDetailViewModelOutput  {
     
-    var viewModel: PokemonDetail?
-    
-    init(viewModel: PokemonDetail? = nil) {
-        self.viewModel = viewModel
+    enum Input {
+        case getPokemonsDetailt
     }
     
-    public func fetchData(with id: Int) async throws -> PokemonDetail {
-        do {
-            return try await PokemonManager.shared.getPokemonDetails(id: id)
+    enum Output {
+        case setPokemonDetail(pokemonDetail: PokemonDetail)
+    }
+    
+    internal var id: Int
+    private var cancellableSet: Set<AnyCancellable> = []
+    internal var pokemonDetailResult = PassthroughSubject<PokemonDetailViewModel.Output, Never>()
+    
+    private weak var router: AuthFlowCoordinatorOutput?
+    
+    init(router: AuthFlowCoordinatorOutput, id: Int) {
+        self.router = router
+        self.id = id
+    }
+    
+    func fetchData(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never>{
+        input.sink { [unowned self] event in
+            switch event{
+            case .getPokemonsDetailt:
+                Task {
+                    let result = try await PokemonManager.shared.getPokemonDetails(id: id)
+                    pokemonDetailResult.send(.setPokemonDetail(pokemonDetail: result))
+                }
+            }
         }
-        catch {
-            throw error
-        }
+        .store(in: &cancellableSet)
+        return pokemonDetailResult.eraseToAnyPublisher()
     }
 }
 

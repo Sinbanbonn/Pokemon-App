@@ -1,9 +1,24 @@
 import UIKit
+import Combine
 import SDWebImage
 
 final class PokemonViewController: UIViewController {
+    private var viewModel: PokemonDetailViewModel
+    
     var activityIndicator: UIActivityIndicatorView?
-
+    private let output = PassthroughSubject<PokemonDetailViewModel.Input, Never>()
+    private var cancellable = Set<AnyCancellable>()
+    
+    init(viewModel: PokemonDetailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+       
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let pokemonImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -73,8 +88,34 @@ final class PokemonViewController: UIViewController {
         view.addSubview(pokemonHeight)
 
         applyConstraints()
+        observe()
+        output.send(.getPokemonsDetailt)
     }
 
+    func observe() {
+        viewModel.fetchData(input: output.eraseToAnyPublisher())
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let self = self else { return }
+                switch event {
+                case .setPokemonDetail(let model):
+                    self.pokemonName.text = model.name
+                    self.pokemonHeight.text = "Height: \(model.height) cm"
+                    self.pokemonWeight.text = "Weight: \(model.weight) kg"
+                    self.pokemonType.text = "Type: \(model.type)"
+                    if PokemonManager.shared.isConnectedToNetwork {
+                        guard let url = URL(string: model.imageURL) else { return }
+                        self.loadImage(with: url)
+                    } else {
+                        self.pokemonImage.image = UIImage(systemName: "tortoise")
+                        self.pokemonImage.tintColor = UIColor.systemBackground
+                    }
+                    
+                }
+            }.store(in: &cancellable)
+                
+            }
+        
     private func applyConstraints() {
         let pokemonImageConstraints = [
             pokemonImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -112,27 +153,6 @@ final class PokemonViewController: UIViewController {
         NSLayoutConstraint.activate(pokemonHeightConstraints)
         NSLayoutConstraint.activate(pokemonWeightConstraints)
         NSLayoutConstraint.activate(pokemonTypeConstraints)
-    }
-    
-    func configure(with id: Int) {
-        let viewModel = PokemonDetailViewModel()
-        Task {
-            let model = try await viewModel.fetchData(with: id)
-            DispatchQueue.main.async {
-                self.pokemonName.text = model.name
-                self.pokemonHeight.text = "Height: \(model.height) cm"
-                self.pokemonWeight.text = "Weight: \(model.weight) kg"
-                self.pokemonType.text = "Type: \(model.type)"
-                if PokemonManager.shared.isConnectedToNetwork {
-                    guard let url = URL(string: model.imageURL) else { return }
-                    self.loadImage(with: url)
-                } else {
-                    self.pokemonImage.image = UIImage(systemName: "tortoise")
-                    self.pokemonImage.tintColor = UIColor.systemBackground
-                }
-                
-            }
-        }
     }
     
     func loadImage(with url: URL) {
