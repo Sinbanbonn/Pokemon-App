@@ -35,7 +35,7 @@ class PokemonDetailViewModel: PokemonDetailViewModelProtocol, PokemonDetailViewM
             switch event{
             case .getPokemonsDetailt:
                 Task {
-                    let result = try await PokemonManager.shared.getPokemonDetails(id: id)
+                    let result = try await PokemonManager().getPokemonDetails(id: id)
                     pokemonDetailResult.send(.setPokemonDetail(pokemonDetail: result))
                 }
             }

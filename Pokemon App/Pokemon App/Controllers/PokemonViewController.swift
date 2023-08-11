@@ -103,7 +103,7 @@ final class PokemonViewController: UIViewController {
                     self.pokemonHeight.text = "Height: \(model.height) cm"
                     self.pokemonWeight.text = "Weight: \(model.weight) kg"
                     self.pokemonType.text = "Type: \(model.type)"
-                    if PokemonManager.shared.isConnectedToNetwork {
+                    if PokemonManager().isConnectedToNetwork {
                         guard let url = URL(string: model.imageURL) else { return }
                         self.loadImage(with: url)
                     } else {

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Combine
 
 
@@ -15,7 +16,8 @@ final class PreviewViewModel: PreviewViewModelProtocol,
         case updateView
     }
     
-    private let networkService = NetworkService()
+    private let networkService: PokemonServiciable = NetworkService()
+    private let pokemonService: PokemonServiceable = PokemonManager()
     
     private weak var router: AuthFlowCoordinatorOutput?
     
@@ -34,10 +36,15 @@ final class PreviewViewModel: PreviewViewModelProtocol,
 
 extension PreviewViewModel {
     func showAlert(_ title: String, _ message: String) {
-        //        let alert = AlertManager.createAlert(title: title, message: message, actions: [.ok(nil)], style: .alert)
-        //        DispatchQueue.main.async { [weak self] in
-        //            //self?.router?.trigger(.base(.alert(alert)))
-        //        }
+        let alertController = UIAlertController(title: title,
+                                                message: message,
+                                                preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in }
+        alertController.addAction(okAction)
+        DispatchQueue.main.async { [weak self] in
+            self?.router?.trigger(.base(.alert(alertController)))
+        }
     }
     
     func showDetail(id: Int) {
@@ -49,13 +56,17 @@ extension PreviewViewModel {
             switch event{
             case .viewDidLoad, .refreshData:
                 Task {
-                    let result = try await networkService.getNetworkPokemonList(offset: 0, limit: limit)
-                    let titles: [PokemonViewModel] = result.results.map { pokemon in
-                        PokemonViewModel(titleName: pokemon.name)
-                    }
+                    do{
+                    let titles = try await pokemonService.getPokemonList(offset: 0, limit: limit)
                     pokemonListResult.send(.setPokemons(pokemons: titles))
                 }
+                    catch {
+                        showAlert("Error", error.localizedDescription)
+                        
+                    }
+                }
             }
+            
         }
         .store(in: &cancellableSet)
         return pokemonListResult.eraseToAnyPublisher()

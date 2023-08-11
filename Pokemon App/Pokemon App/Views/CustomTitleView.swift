@@ -15,7 +15,7 @@ class TitleView: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        if PokemonManager.shared.isConnectedToNetwork {
+        if PokemonManager().isConnectedToNetwork {
             imageView.image = UIImage(systemName: "wifi")
         }else {
             imageView.image = UIImage(systemName: "wifi.slash")}

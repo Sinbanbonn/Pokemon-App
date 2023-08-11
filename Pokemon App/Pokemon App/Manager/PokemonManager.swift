@@ -1,35 +1,35 @@
 import Foundation
 import Reachability
 
-final class PokemonManager {
+protocol PokemonServiceable {
+    func getPokemonList(offset: Int , limit: Int) async throws-> [PokemonViewModel]
+    func getPokemonDetails(id: Int) async throws -> PokemonDetail
+}
+
+final class PokemonManager: PokemonServiceable {
     private let networkManager = NetworkService()
-    static let shared = PokemonManager()
-    private init() {}
+    init() {}
     
     let reachability = try! Reachability()
     var isConnectedToNetwork: Bool {
         return reachability.connection != .unavailable
     }
     
-    var paginationCounter: Int = 0
-    
     func getPokemonList(offset: Int , limit: Int = 20) async throws-> [PokemonViewModel] {
         var pokemonArray: [PokemonViewModel] = [PokemonViewModel]()
         if isConnectedToNetwork {
             do{
-                let pokemons = try await networkManager.getNetworkPokemonList(offset: self.paginationCounter * limit, limit: 20).results
-                
+                let pokemons = try await networkManager.getNetworkPokemonList(offset: 0, limit: limit).results
                 for pokemon in pokemons {
                     pokemonArray.append(PokemonViewModel(titleName: pokemon.name))
                 }
-                self.paginationCounter += 1
                 return pokemonArray
             }
             catch {
+                print(error.localizedDescription)
                 throw error
             }
         }
-        
         else {
             return []
         }

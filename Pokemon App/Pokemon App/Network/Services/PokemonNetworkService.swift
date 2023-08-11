@@ -18,8 +18,4 @@ struct NetworkService: HTTPClient, PokemonServiciable {
                           responseModel: PokemonList.self)
     }
     
-    
-    
-    
-    
 }

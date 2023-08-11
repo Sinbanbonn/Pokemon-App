@@ -36,16 +36,15 @@ final class AuthFlowCoordinator: BaseCoordinator, AuthFlowCoordinatorOutput {
             router.push(pokemonDetailVC, animated: true)
         case .base(let base):
             print()
-//            switch base {
-//            case .alert(let alert):
-//                router.present(alert)
-//            case .pop:
-//                router.dismissModule()
-//                router.popModule(animated: false)
-//            case .dismiss:
-//                router.dismissModule()
-//            default: break
-//            }
+            switch base {
+            case .alert(let alert):
+                router.present(alert)
+            case .pop:
+                break
+            case .dismiss:
+               break
+            default: break
+            }
         }
     }
 }
