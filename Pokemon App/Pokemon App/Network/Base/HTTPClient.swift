@@ -4,42 +4,9 @@ import Combine
 protocol HTTPClient {
     func sendRequest<T: Decodable>(endpoint: Endpoint,
                                    responseModel: T.Type) async throws -> T
-    
-    func sendReques(endpoint: Endpoint,
-                    responseModel: PokemonList.Type) -> AnyPublisher<PokemonList, Never>
 }
 
-extension HTTPClient {
-    func sendReques(endpoint: Endpoint,
-                    responseModel: PokemonList.Type) -> AnyPublisher<PokemonList, Never> {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = endpoint.scheme
-        urlComponents.host = endpoint.host
-        urlComponents.path = endpoint.path
-        
-        
-        guard let url = urlComponents.url else {
-            return Just(PokemonList.placeholder)
-                .eraseToAnyPublisher()
-            
-        }
-        
-        guard let url = url.description.removingPercentEncoding else{
-            return Just(PokemonList.placeholder)
-                .eraseToAnyPublisher()
-        }
-        
-        return URLSession.shared.dataTaskPublisher(for: URL(string: url)!)
-            .map{ $0.data }
-            .decode(type: PokemonList.self, decoder: JSONDecoder())
-            .catch { error in
-                Just(PokemonList.placeholder)
-            }.receive(on: RunLoop.main)
-            .eraseToAnyPublisher()
-        
-    }
-    
-}
+
 extension HTTPClient {
     func sendRequest<T: Decodable>(endpoint: Endpoint,
                                    responseModel: T.Type) async throws -> T {
