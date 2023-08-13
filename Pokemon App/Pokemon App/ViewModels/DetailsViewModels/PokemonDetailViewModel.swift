@@ -20,6 +20,9 @@ class PokemonDetailViewModel: PokemonDetailViewModelProtocol, PokemonDetailViewM
     }
     
     internal var id: Int
+    
+    @Injected(\.pokemonManager) private var pokemonService: PokemonServiceable
+    
     private var cancellableSet: Set<AnyCancellable> = []
     internal var pokemonDetailResult = PassthroughSubject<PokemonDetailViewModel.Output, Never>()
     
@@ -35,7 +38,7 @@ class PokemonDetailViewModel: PokemonDetailViewModelProtocol, PokemonDetailViewM
             switch event{
             case .getPokemonsDetailt:
                 Task {
-                    let result = try await PokemonManager().getPokemonDetails(id: id)
+                    let result = try await pokemonService.getPokemonDetails(id: id)
                     pokemonDetailResult.send(.setPokemonDetail(pokemonDetail: result))
                 }
             }

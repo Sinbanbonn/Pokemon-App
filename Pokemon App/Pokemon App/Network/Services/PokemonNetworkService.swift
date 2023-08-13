@@ -1,12 +1,22 @@
 import Foundation
 import Combine
 
-protocol PokemonServiciable {
+protocol NetworkServiciable {
     func getNetworkPokemonList(offset: Int, limit: Int) async throws ->  PokemonList
     func getNetworkPokemonInfo(id: Int) async throws -> PokemonDetailDTO
 }
 
-struct NetworkService: HTTPClient, PokemonServiciable {
+private struct NetworkServiceKey: InjectionKey {
+    static var currentValue: NetworkServiciable = NetworkService()
+}
+
+extension InjectedValues {
+    var networkService: NetworkServiciable {
+        get { Self[NetworkServiceKey.self] }
+        set { Self[NetworkServiceKey.self] = newValue }
+    }
+}
+struct NetworkService: HTTPClient, NetworkServiciable {
     
     func getNetworkPokemonInfo(id: Int) async  throws -> PokemonDetailDTO {
         try await sendRequest(endpoint: PokemonEndpoint.pokemonDetails(id: id),

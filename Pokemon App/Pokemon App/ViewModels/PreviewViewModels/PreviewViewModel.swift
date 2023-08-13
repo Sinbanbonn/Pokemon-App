@@ -16,8 +16,7 @@ final class PreviewViewModel: PreviewViewModelProtocol,
         case updateView
     }
     
-    private let networkService: PokemonServiciable = NetworkService()
-    private let pokemonService: PokemonServiceable = PokemonManager()
+    @Injected(\.pokemonManager) private var pokemonService: PokemonServiceable
     
     private weak var router: AuthFlowCoordinatorOutput?
     

@@ -2,12 +2,25 @@ import Foundation
 import Reachability
 
 protocol PokemonServiceable {
+    var isConnectedToNetwork: Bool { get }
     func getPokemonList(offset: Int , limit: Int) async throws-> [PokemonViewModel]
     func getPokemonDetails(id: Int) async throws -> PokemonDetail
 }
 
+private struct PokemonManagerKey: InjectionKey {
+    static var currentValue: PokemonServiceable = PokemonManager()
+}
+
+extension InjectedValues {
+    var pokemonManager: PokemonServiceable {
+        get { Self[PokemonManagerKey.self] }
+        set { Self[PokemonManagerKey.self] = newValue }
+    }
+}
+
 final class PokemonManager: PokemonServiceable {
-    private let networkManager = NetworkService()
+    
+    @Injected(\.networkService) private var networkManager: NetworkServiciable
     init() {}
     
     let reachability = try! Reachability()

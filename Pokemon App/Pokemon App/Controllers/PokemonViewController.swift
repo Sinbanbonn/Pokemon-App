@@ -4,6 +4,7 @@ import SDWebImage
 
 final class PokemonViewController: UIViewController {
     private var viewModel: PokemonDetailViewModel
+    @Injected(\.pokemonManager) private var pokemonService: PokemonServiceable
     
     var activityIndicator: UIActivityIndicatorView?
     private let output = PassthroughSubject<PokemonDetailViewModel.Input, Never>()
@@ -103,7 +104,7 @@ final class PokemonViewController: UIViewController {
                     self.pokemonHeight.text = "Height: \(model.height) cm"
                     self.pokemonWeight.text = "Weight: \(model.weight) kg"
                     self.pokemonType.text = "Type: \(model.type)"
-                    if PokemonManager().isConnectedToNetwork {
+                    if pokemonService.isConnectedToNetwork {
                         guard let url = URL(string: model.imageURL) else { return }
                         self.loadImage(with: url)
                     } else {
