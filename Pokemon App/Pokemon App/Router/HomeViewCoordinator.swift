@@ -1,19 +1,19 @@
 import Foundation
 import UIKit
 
-enum AuthFlowRoute: Route {
+enum PreviewFlowRoute: Route {
     case main
-    case shovDetail(id: Int)
+    case showDetail(id: Int)
     case base(BaseRoutes)
 }
 
-protocol AuthFlowCoordinatorOutput: AnyObject {
+protocol PreviewFlowCoordinatorOutput: AnyObject {
     var finishFlow: CompletionBlock? { get set }
-    func trigger(_ route: AuthFlowRoute)
+    func trigger(_ route: PreviewFlowRoute)
 }
 
-final class AuthFlowCoordinator: BaseCoordinator, AuthFlowCoordinatorOutput {
-
+final class PreviewFlowCoordinator: BaseCoordinator, PreviewFlowCoordinatorOutput {
+    
     var finishFlow: CompletionBlock?
     
     fileprivate let router : Routable
@@ -24,14 +24,14 @@ final class AuthFlowCoordinator: BaseCoordinator, AuthFlowCoordinatorOutput {
         self.rootController = router.toPresent
     }
     
-    func trigger(_ route: AuthFlowRoute) {
+    func trigger(_ route: PreviewFlowRoute) {
         switch route {
         case .main:
             let titlesVM = PreviewViewModel(router: self)
-            let loginFlowVC = HomeViewController(viewModel: titlesVM )
-            router.setRootModule(loginFlowVC)
-        case .shovDetail(let id):
-           let pokemonDetailVM = PokemonDetailViewModel(router: self, id: id)
+            let homeFlowVC = HomeViewController(viewModel: titlesVM )
+            router.setRootModule(homeFlowVC)
+        case .showDetail(let id):
+            let pokemonDetailVM = DetailViewModel(router: self, id: id)
             let pokemonDetailVC = PokemonViewController(viewModel: pokemonDetailVM)
             router.push(pokemonDetailVC, animated: true)
         case .base(let base):
@@ -42,7 +42,7 @@ final class AuthFlowCoordinator: BaseCoordinator, AuthFlowCoordinatorOutput {
             case .pop:
                 break
             case .dismiss:
-               break
+                break
             default: break
             }
         }
@@ -50,7 +50,7 @@ final class AuthFlowCoordinator: BaseCoordinator, AuthFlowCoordinatorOutput {
 }
 
 // MARK: - Coordinatable
-extension AuthFlowCoordinator: Coordinatable {
+extension PreviewFlowCoordinator: Coordinatable {
     func start() {
         trigger(.main)
     }

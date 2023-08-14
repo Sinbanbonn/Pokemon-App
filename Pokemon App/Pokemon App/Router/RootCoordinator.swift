@@ -6,7 +6,6 @@ final class RootCoordinator: BaseCoordinator {
     private var router: Routable
     private var cancellables: Set<AnyCancellable> = []
     
-    
     init(router: Routable) {
         self.router = router
         super.init()
@@ -16,13 +15,13 @@ final class RootCoordinator: BaseCoordinator {
 // MARK: - Coordinatable
 extension RootCoordinator: Coordinatable {
     func start() {
-        makeLoginFlowCoordinator().start()
+        makePreviewFlowCoordinator().start()
     }
 }
 
 extension RootCoordinator {
-    func makeLoginFlowCoordinator() -> AuthFlowCoordinator {
-        let coordinator = AuthFlowCoordinator(router: router)
+    func makePreviewFlowCoordinator() -> PreviewFlowCoordinator {
+        let coordinator = PreviewFlowCoordinator(router: router)
         coordinator.finishFlow = { [weak self, weak coordinator] in
             guard let self = self else { return }
             self.removeDependency(coordinator)

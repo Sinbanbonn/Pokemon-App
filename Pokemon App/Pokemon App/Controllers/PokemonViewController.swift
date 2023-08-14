@@ -3,17 +3,16 @@ import Combine
 import SDWebImage
 
 final class PokemonViewController: UIViewController {
-    private var viewModel: PokemonDetailViewModel
+    private var viewModel: DetailViewModel
     @Injected(\.pokemonManager) private var pokemonService: PokemonServiceable
     
     var activityIndicator: UIActivityIndicatorView?
-    private let output = PassthroughSubject<PokemonDetailViewModel.Input, Never>()
+    
     private var cancellable = Set<AnyCancellable>()
     
-    init(viewModel: PokemonDetailViewModel) {
+    init(viewModel: DetailViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-       
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +29,7 @@ final class PokemonViewController: UIViewController {
         imageView.clipsToBounds = true
         return imageView
     }()
-
+    
     private let pokemonName: UILabel = {
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +37,7 @@ final class PokemonViewController: UIViewController {
         nameLabel.textAlignment = .center
         return nameLabel
     }()
-
+    
     private let pokemonType: UILabel = {
         let bodyTypeLabel = UILabel()
         bodyTypeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -46,7 +45,7 @@ final class PokemonViewController: UIViewController {
         bodyTypeLabel.textAlignment = .left
         return bodyTypeLabel
     }()
-
+    
     private let pokemonWeight: UILabel = {
         let weightLabel = UILabel()
         weightLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -54,7 +53,7 @@ final class PokemonViewController: UIViewController {
         weightLabel.textAlignment = .left
         return weightLabel
     }()
-
+    
     private let pokemonHeight: UILabel = {
         let heightLabel = UILabel()
         heightLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -62,7 +61,85 @@ final class PokemonViewController: UIViewController {
         heightLabel.textAlignment = .left
         return heightLabel
     }()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+        
+        view.addSubview(pokemonImage)
+        view.addSubview(pokemonName)
+        view.addSubview(pokemonType)
+        view.addSubview(pokemonWeight)
+        view.addSubview(pokemonHeight)
+        bindPublishers()
+        applyConstraints()
+    }
+    
+    private func applyConstraints() {
+        let pokemonImageConstraints = [
+            pokemonImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            pokemonImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pokemonImage.widthAnchor.constraint(equalToConstant: 250),
+            pokemonImage.heightAnchor.constraint(equalToConstant: 250)
+        ]
+        
+        let pokemonNameConstraints = [
+            pokemonName.topAnchor.constraint(equalTo: pokemonImage.bottomAnchor, constant: 20),
+            pokemonName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            pokemonName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
+        
+        let pokemonWeightConstraints = [
+            pokemonWeight.topAnchor.constraint(equalTo: pokemonName.bottomAnchor, constant: 12),
+            pokemonWeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            pokemonWeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
+        
+        let pokemonHeightConstraints = [
+            pokemonHeight.topAnchor.constraint(equalTo: pokemonWeight.bottomAnchor, constant: 12),
+            pokemonHeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            pokemonHeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
+        
+        let pokemonTypeConstraints = [
+            pokemonType.topAnchor.constraint(equalTo: pokemonHeight.bottomAnchor, constant: 12),
+            pokemonType.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            pokemonType.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ]
+        
+        NSLayoutConstraint.activate(pokemonImageConstraints)
+        NSLayoutConstraint.activate(pokemonNameConstraints)
+        NSLayoutConstraint.activate(pokemonHeightConstraints)
+        NSLayoutConstraint.activate(pokemonWeightConstraints)
+        NSLayoutConstraint.activate(pokemonTypeConstraints)
+    }
+}
 
+// MARK: - UI Configuration and Image Loading
+extension PokemonViewController {
+    func configureUI() {
+        pokemonName.text = viewModel.detail.name
+        pokemonHeight.text = "Height: \(viewModel.detail.height) cm"
+        pokemonWeight.text = "Weight: \(viewModel.detail.weight) kg"
+        pokemonType.text = "Type: \(viewModel.detail.type)"
+        guard let url = URL(string: viewModel.detail.imageURL) else { return }
+        loadImage(with: url)
+    }
+    
+    func loadImage(with url: URL) {
+        showLoader()
+        
+        pokemonImage.sd_setImage(with: url) { [weak self] (_, error, _, _) in
+            self?.hideLoader()
+            if let error = error {
+                print("Failed to fetch image: \(error.localizedDescription)")
+            }
+        }
+    }
+}
+
+// MARK: - Loader Handling
+extension PokemonViewController {
     func showLoader() {
         if activityIndicator == nil {
             activityIndicator = UIActivityIndicatorView(style: .large)
@@ -71,99 +148,29 @@ final class PokemonViewController: UIViewController {
             pokemonImage.addSubview(activityIndicator!)
         }
     }
-
+    
     func hideLoader() {
         activityIndicator?.stopAnimating()
         activityIndicator?.removeFromSuperview()
         activityIndicator = nil
     }
+}
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-
-        view.addSubview(pokemonImage)
-        view.addSubview(pokemonName)
-        view.addSubview(pokemonType)
-        view.addSubview(pokemonWeight)
-        view.addSubview(pokemonHeight)
-
-        applyConstraints()
-        observe()
-        output.send(.getPokemonsDetailt)
-    }
-
-    func observe() {
-        viewModel.fetchData(input: output.eraseToAnyPublisher())
+// MARK: - Publisher Binding
+extension PokemonViewController {
+    func bindPublishers() {
+        viewModel.output.detailModelResult
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] event in
-                guard let self = self else { return }
-                switch event {
-                case .setPokemonDetail(let model):
-                    self.pokemonName.text = model.name
-                    self.pokemonHeight.text = "Height: \(model.height) cm"
-                    self.pokemonWeight.text = "Weight: \(model.weight) kg"
-                    self.pokemonType.text = "Type: \(model.type)"
-                    if pokemonService.isConnectedToNetwork {
-                        guard let url = URL(string: model.imageURL) else { return }
-                        self.loadImage(with: url)
-                    } else {
-                        self.pokemonImage.image = UIImage(systemName: "tortoise")
-                        self.pokemonImage.tintColor = UIColor.systemBackground
-                    }
+            .sink(receiveValue: { [weak self] result in
+                switch result {
+                case .success:
+                    self?.viewModel.fetchData()
+                    self?.configureUI()
                     
+                case .failure:
+                    break
                 }
-            }.store(in: &cancellable)
-                
-            }
-        
-    private func applyConstraints() {
-        let pokemonImageConstraints = [
-            pokemonImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            pokemonImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pokemonImage.widthAnchor.constraint(equalToConstant: 250),
-            pokemonImage.heightAnchor.constraint(equalToConstant: 250)
-        ]
-
-        let pokemonNameConstraints = [
-            pokemonName.topAnchor.constraint(equalTo: pokemonImage.bottomAnchor, constant: 20),
-            pokemonName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-        ]
-
-        let pokemonWeightConstraints = [
-            pokemonWeight.topAnchor.constraint(equalTo: pokemonName.bottomAnchor, constant: 12),
-            pokemonWeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonWeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-        ]
-
-        let pokemonHeightConstraints = [
-            pokemonHeight.topAnchor.constraint(equalTo: pokemonWeight.bottomAnchor, constant: 12),
-            pokemonHeight.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonHeight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-        ]
-
-        let pokemonTypeConstraints = [
-            pokemonType.topAnchor.constraint(equalTo: pokemonHeight.bottomAnchor, constant: 12),
-            pokemonType.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pokemonType.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-        ]
-
-        NSLayoutConstraint.activate(pokemonImageConstraints)
-        NSLayoutConstraint.activate(pokemonNameConstraints)
-        NSLayoutConstraint.activate(pokemonHeightConstraints)
-        NSLayoutConstraint.activate(pokemonWeightConstraints)
-        NSLayoutConstraint.activate(pokemonTypeConstraints)
-    }
-    
-    func loadImage(with url: URL) {
-        showLoader()
-
-        pokemonImage.sd_setImage(with: url) { [weak self] (_, error, _, _) in
-            self?.hideLoader()
-            if let error = error {
-                print("Failed to fetch image: \(error.localizedDescription)")
-            }
-        }
+            })
+            .store(in: &cancellable)
     }
 }

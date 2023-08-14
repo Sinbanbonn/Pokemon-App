@@ -7,10 +7,6 @@ struct PokemonList: Codable {
     enum CodingKeys: String, CodingKey {
         case results
     }
-    
-    static var placeholder: Self {
-        return PokemonList(results: [])
-    }
 }
 
 struct Pokemon: Codable {
