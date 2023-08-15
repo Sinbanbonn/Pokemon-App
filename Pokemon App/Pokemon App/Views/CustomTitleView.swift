@@ -2,7 +2,8 @@ import UIKit
 import Foundation
 
 class TitleView: UIView {
-    let titleLabel: UILabel = {
+    
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.text = "Pokemon List"
@@ -11,14 +12,12 @@ class TitleView: UIView {
         return label
     }()
     
-    let imageView: UIImageView = {
+    private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        if PokemonManager().isConnectedToNetwork {
-            imageView.image = UIImage(systemName: "wifi")
-        }else {
-            imageView.image = UIImage(systemName: "wifi.slash")}
+        
+        imageView.image = UIImage(systemName: "wifi")
         return imageView
     }()
     

@@ -2,8 +2,6 @@ import UIKit
 
 final class TitleTableViewCell: UITableViewCell {
 
-    static let identifier = "TitleTableViewCell"
-
     private let playTitleButton: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false

@@ -6,7 +6,7 @@ final class PokemonViewController: UIViewController {
     private var viewModel: DetailViewModel
     @Injected(\.pokemonManager) private var pokemonService: PokemonServiceable
     
-    var activityIndicator: UIActivityIndicatorView?
+    private var activityIndicator: UIActivityIndicatorView?
     
     private var cancellable = Set<AnyCancellable>()
     
