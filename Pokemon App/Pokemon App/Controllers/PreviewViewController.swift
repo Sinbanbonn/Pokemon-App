@@ -1,14 +1,14 @@
 import UIKit
 import Combine
 
-final class HomeViewController: UIViewController {
+final class PreviewViewController: UIViewController {
     
     private let viewModel: PreviewViewModel
     private var cancellable = Set<AnyCancellable>()
     
     private let pokemonTable: UITableView = {
         let table = UITableView()
-        table.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
+        table.registerWithoutNib(TitleTableViewCell.self)
         return table
     }()
     
@@ -44,20 +44,14 @@ final class HomeViewController: UIViewController {
     }
 }
 
-extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
+extension PreviewViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.titles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: TitleTableViewCell.identifier,
-            for: indexPath) as? TitleTableViewCell else {
-            return UITableViewCell()
-        }
-        
-        let title = viewModel.titles[indexPath.row]
-        cell.configure(with: title)
+        guard let cell = tableView.dequeue(TitleTableViewCell.self, for: indexPath) else {  return UITableViewCell()}
+        cell.configure(with: viewModel.titles[indexPath.row])
         return cell
     }
     
@@ -71,7 +65,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension HomeViewController {
+extension PreviewViewController {
     /// Bind publishers for data updates
     func bindPublishers() {
         viewModel.output.pokemonListResult

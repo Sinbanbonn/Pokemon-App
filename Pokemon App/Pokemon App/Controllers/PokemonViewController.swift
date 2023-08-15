@@ -116,7 +116,7 @@ final class PokemonViewController: UIViewController {
 }
 
 // MARK: - UI Configuration and Image Loading
-extension PokemonViewController {
+private extension PokemonViewController {
     func configureUI() {
         pokemonName.text = viewModel.detail.name
         pokemonHeight.text = "Height: \(viewModel.detail.height) cm"
@@ -139,7 +139,7 @@ extension PokemonViewController {
 }
 
 // MARK: - Loader Handling
-extension PokemonViewController {
+private extension PokemonViewController {
     func showLoader() {
         if activityIndicator == nil {
             activityIndicator = UIActivityIndicatorView(style: .large)

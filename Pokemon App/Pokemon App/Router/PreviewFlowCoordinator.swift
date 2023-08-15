@@ -28,8 +28,8 @@ final class PreviewFlowCoordinator: BaseCoordinator, PreviewFlowCoordinatorOutpu
         switch route {
         case .main:
             let titlesVM = PreviewViewModel(router: self)
-            let homeFlowVC = HomeViewController(viewModel: titlesVM )
-            router.setRootModule(homeFlowVC)
+            let previewFlowVC = PreviewViewController(viewModel: titlesVM )
+            router.setRootModule(previewFlowVC)
         case .showDetail(let id):
             let pokemonDetailVM = DetailViewModel(router: self, id: id)
             let pokemonDetailVC = PokemonViewController(viewModel: pokemonDetailVM)

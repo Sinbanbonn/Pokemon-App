@@ -47,7 +47,6 @@ extension Routable {
         push(module, animated: animated, completion: nil)
     }
     
-    
     func setRootModule(_ module: Presentable?) {
         setRootModule(module, hideBar: false)
     }
