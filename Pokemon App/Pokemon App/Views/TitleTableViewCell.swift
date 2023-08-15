@@ -46,7 +46,7 @@ final class TitleTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate(playTitleButtonConstraints)
     }
 
-    public func configure(with model: PokemonViewModel) {
+    public func configure(with model: PokemonPreviewModel) {
         titleLabel.text = model.titleName.capitalizeFirstLetter()
     }
 

@@ -11,7 +11,7 @@ protocol PokemonServiceable {
     ///   - offset: The offset for pagination.
     ///   - limit: The number of items to fetch.
     /// - Returns: An array of Pokemon view models.
-    func getPokemonList(offset: Int, limit: Int) async throws -> [PokemonViewModel]
+    func getPokemonList(offset: Int, limit: Int) async throws -> [PokemonPreviewModel]
     
     /// Fetches detailed information about a Pokemon.
     ///

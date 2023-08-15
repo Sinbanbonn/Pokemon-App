@@ -21,7 +21,7 @@ extension PokemonManager: PokemonServiceable {
         return reachability?.connection != .unavailable
     }
     
-    func getPokemonList(offset: Int, limit: Int = 20) async throws -> [PokemonViewModel] {
+    func getPokemonList(offset: Int, limit: Int = 20) async throws -> [PokemonPreviewModel] {
         // Use network data if available, otherwise return empty array
         return await isConnectedToNetwork ? try getArrayFromNetwork(offset: offset, limit: limit) : []
     }
@@ -34,14 +34,14 @@ extension PokemonManager: PokemonServiceable {
 
 // MARK: - Private methods for getting arrays of Pokemons
 private extension PokemonManager {
-    func getArrayFromNetwork(offset: Int, limit: Int) async throws -> [PokemonViewModel] {
+    func getArrayFromNetwork(offset: Int, limit: Int) async throws -> [PokemonPreviewModel] {
         do {
-            var pokemonArray: [PokemonViewModel] = []
+            var pokemonArray: [PokemonPreviewModel] = []
             let pokemons = try await networkManager.getNetworkPokemonList(offset: 0, limit: limit).results
             
             // Map network data to view models
             for pokemon in pokemons {
-                pokemonArray.append(PokemonViewModel(titleName: pokemon.name))
+                pokemonArray.append(PokemonPreviewModel(titleName: pokemon.name))
             }
             
             return pokemonArray

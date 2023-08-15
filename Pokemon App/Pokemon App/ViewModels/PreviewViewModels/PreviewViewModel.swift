@@ -17,7 +17,7 @@ final class PreviewViewModel: PreviewViewModelProtocol,
     // Reference to the router for navigation
     private weak var router: PreviewFlowCoordinatorOutput?
     
-    var titles: [PokemonViewModel] = []
+    var titles: [PokemonPreviewModel] = []
     private var limit: Int = 20
     
     // Published property to represent the current state of the ViewModel

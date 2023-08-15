@@ -1,5 +1,5 @@
 import Foundation
 
-struct PokemonViewModel {
+struct PokemonPreviewModel {
     let titleName: String
 }
